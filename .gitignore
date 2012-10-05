@@ -1,0 +1,6 @@
+# huuuunt git ignore file type
+mysql/
+doc/
+web/
+db_convert/
+app/data/
