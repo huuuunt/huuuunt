@@ -19,7 +19,7 @@ class MatchImportCmd < CmdParse::Command
   end
 
   def execute(args)
-    Match.import(args)
+    MatchCtrl.import(args)
   end
 end
 
@@ -31,6 +31,6 @@ class MatchExportCmd < CmdParse::Command
   end
 
   def execute(args)
-    Match.export(args)
+    MatchCtrl.export(args)
   end
 end

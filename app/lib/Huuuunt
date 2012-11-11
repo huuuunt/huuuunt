@@ -19,17 +19,53 @@
 #    -v, --version                    Show the version of the program
 
 
+########################
+# require文件加载路径设置 #
+########################
+$LOAD_PATH.unshift(File.dirname(File.expand_path("./", __FILE__)))
+
 require 'rubygems'
+require 'log4r'
 require 'cmdparse'
+require 'active_record'
 
 require 'cmd/match_cmd'
 require 'cmd/team_cmd'
 require 'cmd/result_cmd'
 
-require 'import/match'
+require 'function/match_ctrl'
 
+###################
+# log4r日志模块配置 #
+###################
+$logger = Log4r::Logger.new("Huuuunt")
+# 日志记录等级设置
+$logger.level = Log4r::DEBUG
+formatter = Log4r::PatternFormatter.new(
+  :pattern => "%C[%l]: %M"
+  #:pattern => "%C[%l]:[%t] %M",
+  #:date_format => "%Y/%m/%d %H:%M:%S"
+)  
+logfile = Log4r::FileOutputter.new(
+  "log",
+  {
+    :filename => File.expand_path("./log/huuuunt.log", File.dirname(__FILE__)),
+    :formatter => formatter,
+    :trunc => true   # 下次运行是否先清空原先的日志文件内容
+  })
+$logger.outputters = logfile
 
-# CmdParse类初始化
+ActiveRecord::Base.establish_connection(
+  :adapter  => "mysql2",
+  :host     => "localhost",
+  :username => "root",
+  :password => "mysql",
+  :database => "huuuunt"
+)
+
+###################
+# CmdParse相关设置 #
+###################
 cmd = CmdParse::CommandParser.new(true, true)
 cmd.program_name = "Huuuunt"
 cmd.program_version = [0, 0, 1]
@@ -56,7 +92,9 @@ result_cmd.add_command(ResultDownloadCmd.new)
 result_cmd.add_command(ResultPreprocessCmd.new)
 result_cmd.add_command(ResultUpdateCmd.new)
 
-# 将所有一级命令挂载到CmdParse实例
+################################
+# 将所有一级命令挂载到CmdParse实例 #
+################################
 cmd.add_command(match_cmd)
 cmd.add_command(team_cmd)
 cmd.add_command(result_cmd)
