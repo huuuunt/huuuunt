@@ -1,0 +1,65 @@
+#!/usr/bin/ruby
+
+# 主程序入口
+
+# 运行命令解释器，等待命令输入。
+
+#Usage: Huuuunt [global options] COMMAND [options] [ARGS]
+#
+#Available commands:
+#    help            Provide help for individual commands
+#    match           赛事名称等数据处理程序
+#      export        赛事名称等数据从数据库中导出到Excel
+#      import        赛事名称等数据从Excel中导入到数据库
+#    version         Show the version of the program
+#
+#Global options:
+#        --verbose                    输出详细信息
+#    -h, --help                       Show help
+#    -v, --version                    Show the version of the program
+
+
+require 'rubygems'
+require 'cmdparse'
+
+require 'cmd/match_cmd'
+require 'cmd/team_cmd'
+require 'cmd/result_cmd'
+
+require 'import/match'
+
+
+# CmdParse类初始化
+cmd = CmdParse::CommandParser.new(true, true)
+cmd.program_name = "Huuuunt"
+cmd.program_version = [0, 0, 1]
+cmd.options = CmdParse::OptionParserWrapper.new do |opt|
+  opt.separator "Global options:"
+  opt.on("--verbose", "输出详细信息") {|t| $verbose = true }
+end
+cmd.add_command(CmdParse::HelpCommand.new)
+cmd.add_command(CmdParse::VersionCommand.new)
+
+# 赛事名称等数据处理CMD
+match_cmd = MatchCmd.new
+match_cmd.add_command(MatchImportCmd.new)
+match_cmd.add_command(MatchExportCmd.new)
+
+# 球队名称等数据处理CMD
+team_cmd = TeamCmd.new
+team_cmd.add_command(TeamImportCmd.new)
+team_cmd.add_command(TeamExportCmd.new)
+
+# 赛果数据处理CMD
+result_cmd = ResultCmd.new
+result_cmd.add_command(ResultDownloadCmd.new)
+result_cmd.add_command(ResultPreprocessCmd.new)
+result_cmd.add_command(ResultUpdateCmd.new)
+
+# 将所有一级命令挂载到CmdParse实例
+cmd.add_command(match_cmd)
+cmd.add_command(team_cmd)
+cmd.add_command(result_cmd)
+
+# CmdParse开始解析命令
+cmd.parse
