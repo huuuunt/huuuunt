@@ -19,7 +19,7 @@ class TeamImportCmd < CmdParse::Command
   end
 
   def execute(args)
-
+    TeamCtrl.import(args)
   end
 end
 
@@ -31,6 +31,6 @@ class TeamExportCmd < CmdParse::Command
   end
 
   def execute(args)
-
+    TeamCtrl.export(args)
   end
 end

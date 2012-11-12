@@ -6,3 +6,4 @@ db_convert/
 app/data/
 app/nbproject/
 app/lib/log/
+app/lib/old/

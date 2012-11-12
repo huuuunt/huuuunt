@@ -34,6 +34,7 @@ require 'cmd/team_cmd'
 require 'cmd/result_cmd'
 
 require 'function/match_ctrl'
+require 'function/team_ctrl'
 
 ###################
 # log4r日志模块配置 #
