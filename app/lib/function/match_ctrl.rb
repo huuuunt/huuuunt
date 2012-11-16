@@ -3,7 +3,6 @@
 require 'rubygems'
 require 'spreadsheet'
 
-require 'mysql/mysql_driver'
 require 'mysql/match_info'
 require 'util/excel'
 
@@ -32,46 +31,52 @@ class MatchCtrl
     match_sheet = book.worksheet("match")
     country_sheet = book.worksheet("country")
         
-    # 写入countries数据库表
+    # 写入countries数据库表    
     ActiveRecord::Base.connection.execute("TRUNCATE table countries")
+    countries = []
     country_sheet.each do |row|
       next if row[0] == "CountryId"      
-      Country.create(:id => row[0],
-                     :name_cn => row[1],
-                     :name_tw => row[2],
-                     :name_en => row[3],
-                     :name_jp => row[4],
-                     :flag => row[5])
+      countries << Country.new(:id => row[0],
+                               :name_cn => row[1],
+                               :name_tw => row[2],
+                               :name_en => row[3],
+                               :name_jp => row[4],
+                               :flag => row[5])
     end
+    Country.import(countries)
    
     # 写入match_infos数据库表
     ActiveRecord::Base.connection.execute("TRUNCATE table match_infos")
+    matches = []
     match_sheet.each do |row|
       next if row[1] == "MatchName"
       country_id = Country.where("name_cn = ?", row[2]).first.id if get_cell_val(row[2])
-      MatchInfo.create(:match_id => row[0],
-                       :name_cn => row[1],
-                       :name_tc => row[4],
-                       :name_en => row[5],
-                       :name_jp => row[6],
-                       :match_color => row[8],
-                       :is_stat => row[9],
-                       :country_id => country_id,
-                       :bet007_match_id => row[10],
-                       :phases => row[11],
-                       :season_type => row[12])
+      matches << MatchInfo.new(:match_id => row[0],
+                               :name_cn => row[1],
+                               :name_tc => row[4],
+                               :name_en => row[5],
+                               :name_jp => row[6],
+                               :match_color => row[8],
+                               :is_stat => row[9],
+                               :country_id => country_id,
+                               :bet007_match_id => row[10],
+                               :phases => row[11],
+                               :season_type => row[12])
     end
+    MatchInfo.import(matches)
 
     # 写入match_other_infos数据库表
     ActiveRecord::Base.connection.execute("TRUNCATE table match_other_infos")
+    match_others = []
     match_sheet.each do |row|
       next if row[1] == "MatchName"
       start = 14
       while get_cell_val(row[start])
-        MatchOtherInfo.create(:match_id => row[0], :name => row[start])
+        match_others << MatchOtherInfo.new(:match_id => row[0], :name => row[start])
         start += 1
       end
     end
+    MatchOtherInfo.import(match_others)
   end
 
   # 将赛事名称等相关数据导出到Excel中

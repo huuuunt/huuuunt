@@ -28,6 +28,7 @@ require 'rubygems'
 require 'log4r'
 require 'cmdparse'
 require 'active_record'
+require 'activerecord-import'
 
 require 'cmd/match_cmd'
 require 'cmd/team_cmd'
@@ -56,6 +57,9 @@ logfile = Log4r::FileOutputter.new(
   })
 $logger.outputters = logfile
 
+#####################
+# MySQL数据库连接配置 #
+#####################
 ActiveRecord::Base.establish_connection(
   :adapter  => "mysql2",
   :host     => "localhost",
