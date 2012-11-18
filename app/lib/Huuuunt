@@ -36,6 +36,7 @@ require 'cmd/result_cmd'
 
 require 'function/match_ctrl'
 require 'function/team_ctrl'
+require 'function/result_ctrl'
 
 ###################
 # log4r日志模块配置 #
@@ -96,6 +97,7 @@ result_cmd = ResultCmd.new
 result_cmd.add_command(ResultDownloadCmd.new)
 result_cmd.add_command(ResultPreprocessCmd.new)
 result_cmd.add_command(ResultUpdateCmd.new)
+result_cmd.add_command(ResultDPUCmd.new)
 
 ################################
 # 将所有一级命令挂载到CmdParse实例 #

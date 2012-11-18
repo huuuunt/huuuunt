@@ -70,19 +70,6 @@ class ResultUpdate
         next if details.size==1   # 无效数据行，如“先开球(小阿根廷人)”
       
         yield match
-        
-        #details = match/'td'
-        #match_name = details[0].inner_text          # 美乙
-        #match_datetime = details[1].inner_text      # 08-06-21 08:00
-        #match_status = details[2].inner_text        # 完
-        #match_home =  details[3].inner_text         # 查勒斯頓電池
-        #match_goal =  details[4].inner_text         # 1-1
-        #match_away = details[5].inner_text          # 明尼蘇達群星
-        #match_half_goal = details[6].inner_text     # 0-0
-
-        #puts "#{match_name},#{match_datetime},#{match_status},#{match_home},#{match_goal},#{match_away},#{match_half_goal}"
-        
-        #break if count>1
     end
   end
 

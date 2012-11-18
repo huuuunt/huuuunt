@@ -1,4 +1,3 @@
-# 常用变量等数据存放
 
 module Huuuunt
   module Excel
