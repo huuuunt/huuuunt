@@ -69,7 +69,7 @@ class TeamCtrl
 
     # 读取球队对应的赛事名称，保存成hash
     match = {}
-    MatchInfo.getAllMatchName.each do |m|
+    MatchInfo.get_all_matchname.each do |m|
       match[m.match_id] = m.name_cn
     end
     

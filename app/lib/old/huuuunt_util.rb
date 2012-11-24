@@ -15,25 +15,24 @@ class HuuuuntUtil
     when 3
       return full_matchno = "0#{matchno}"
     when 4
-      return full_matchno.to_s
+      return matchno.to_s
     else
       puts "matchno(#{matchno}) length(#{matchno.to_s.length}) error!"
     end
   end
 
   def create_full_teamno(teamno)
-    full_teamno = ""
     case teamno.to_s.length
     when 1
-      return full_teamno = "0000#{teamno}"
+      return "0000#{teamno}"
     when 2
-      return full_teamno = "000#{teamno}"
+      return "000#{teamno}"
     when 3
-      return full_teamno = "00#{teamno}"
+      return "00#{teamno}"
     when 4
-      return full_teamno = "0#{teamno}"
+      return "0#{teamno}"
     when 5
-      return full_teamno
+      return teamno.to_s
     else
       puts "teamno(#{teamno}) length(#{teamno.to_s.length}) error!"
     end

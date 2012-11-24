@@ -47,11 +47,11 @@ class MatchCtrl
    
     # 写入match_infos数据库表
     ActiveRecord::Base.connection.execute("TRUNCATE table match_infos")
-    matches = []
+    match_infos = []
     match_sheet.each do |row|
       next if row[1] == "MatchName"
       country_id = Country.where("name_cn = ?", row[2]).first.id if get_cell_val(row[2])
-      matches << MatchInfo.new(:match_id => row[0],
+      match_infos << MatchInfo.new(:match_id => row[0],
                                :name_cn => row[1],
                                :name_tc => row[4],
                                :name_en => row[5],
@@ -63,7 +63,7 @@ class MatchCtrl
                                :phases => row[11],
                                :season_type => row[12])
     end
-    MatchInfo.import(matches)
+    MatchInfo.import(match_infos)
 
     # 写入match_other_infos数据库表
     ActiveRecord::Base.connection.execute("TRUNCATE table match_other_infos")
@@ -114,7 +114,7 @@ class MatchCtrl
     end
 
     # country信息需要读取countries数据表,写入match中
-    MatchInfo.getCountryName.each do |m|
+    MatchInfo.get_country_name.each do |m|
       index = m.match_id
       match_sheet[index, 2] = m.country_name
     end
