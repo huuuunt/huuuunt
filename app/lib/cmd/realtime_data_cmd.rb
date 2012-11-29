@@ -4,6 +4,7 @@ SplitDomain="$"
 SplitRecord="~"   
 SplitColumn="^"
 Lang = "cn"
+LastTimeStamp = 0
 MatchStatus = [["", "", ""], ["未", "未", ""], ["待", "待", "FT ONLY"], ["上", "上", "1st"], ["下", "下", "2nd"], 
               ["半", "半", "HT"], ["完", "完", "Fin"], ["加", "加", "Ext"], ["加1", "加1", "Ext1"], ["加2", "加2", "Ext2"],
               ["完", "完", "ExtF"], ["点", "點", "Penalty"], ["暂", "暂", "Pause"], ["斩", "斬", "Suspend"],
@@ -41,11 +42,12 @@ end
 
 class Match
   attr_accessor :gid, :spid, :matchTime, :matchTimeUTC, :stateId, :state, :lid, 
-                :t1id, :t1tr, :t1en, :t1cn, :t1rate, :t1country,
-                :t2id, :t2tr, :t2en, :t2cn, :t2rate, :t2country,
+                :t1id, :t1tr, :t1en, :t1cn, :t1rate, :t1country, :t1Name,
+                :t2id, :t2tr, :t2en, :t2cn, :t2rate, :t2country, :t2Name,
                 :t1score, :t2score, :t1scorehalf, :t2scorehalf, :t1score90, :t2score90, :t1score120, :t2score120,
                 :t1scorekick, :t2scorekick, :t1scoref, :t2scoref, :t1redcard, :t2redcard, :tv, :hasOdds, :analysisMatchBefore,
-                :netual, :place, :runTime, :hasJian, :hasPplv, :mIsZr, :pI的, :lIsZr, :lotIssue, :lotNo
+                :netual, :place, :runTime, :hasJian, :hasPplv, :mIsZr, :pI的, :lIsZr, :lotIssue, :lotNo,
+                :bdIssue, :bdno, :KOTime
   def initialize(matchRecord)
     var infoArr=matchRecord.split(SplitColumn);
     @gid = infoArr[0]
@@ -92,8 +94,59 @@ class Match
     @lIsZr = ""
     @lotIssue = ""
     @lotNo = ""
+    if (infoArr[37])
+      lli = infoArr[37].split(",")
+      @lotIssue = lli[0]
+      @lotNo = lli[1]
+    end
     
-        
+    @bdIssue = "";
+    @bdNo = "";
+    if(infoArr[38])
+        lli = infoArr[38].split(",")
+        @bdIssue = lli[0];
+        @bdNo = lli[1];
+    end
+    
+    @KOTime = @matchTime;
+    if(infoArr.length >= 34)
+      @KOTime = new Date(infoArr[33]*1000)
+    end
+    
+    if(Lang=="en")
+      @t1Name=@t1En
+      @t2Name=@t2En
+    elsif(Lang=="cn")
+      @t1Name=@t1Cn
+      @t2Name=@t2Cn
+    else
+      @t1Name=@t1Tr
+      @t2Name=@t2Tr
+    end
+    
+    if(@stateId=="3")
+      @runTime = Integer((TimeStamp-infoArr[2])/60)
+      if(@runTime<0)
+        @runTime=0
+      end
+    elsif (@StateId=="4")
+      @runTime = Integer((TimeStamp-infoArr[2])/60)+45;
+      if(@runTime<46)
+        @runTime=46
+      end
+    end
+    if(@stateId=="1"||@stateId=="14"||@stateId=="15")#this.State==""||this.State=="取"||this.State=="改"
+      @t1score=""
+      @t2score=""
+      @t1scorehalf=""
+      @t2scorehalf=""
+    elsif(@stateId=="2")#/*this.State=="待"*/)
+      @t1score="?"
+      @t2score="?"
+      @t1scorehalf="?"
+      @t2scorehalf="?"
+    end
+    
   end
 end
 
@@ -114,9 +167,10 @@ class RealTimeDataCollector
     
     publicDomain=domains[0].split(SplitColumn);
     
-    if(Integer(publicDomain[0]) >  @lastTimeStamp)
-      @lastTimeStamp = Integer(publicDomain[0])
+    if(Integer(publicDomain[0]) >  LastTimeStamp)
+      LastTimeStamp = Integer(publicDomain[0])
     end
+    
     @matchNum = publicDomain[2];
     @controlKey = publicDomain[1]
     
