@@ -3,6 +3,8 @@
 require 'rubygems'
 require 'cmdparse'
 
+require 'function/team_ctrl'
+
 class TeamCmd < CmdParse::Command
   def initialize
     super('team', true)

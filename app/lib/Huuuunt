@@ -27,16 +27,14 @@ $LOAD_PATH.unshift(File.dirname(File.expand_path("./", __FILE__)))
 require 'rubygems'
 require 'log4r'
 require 'cmdparse'
-require 'active_record'
-require 'activerecord-import'
+#require 'net/http'
+#require 'iconv'
+#require 'date'
+#require 'hpricot'
 
 require 'cmd/match_cmd'
 require 'cmd/team_cmd'
 require 'cmd/result_cmd'
-
-require 'function/match_ctrl'
-require 'function/team_ctrl'
-require 'function/result_ctrl'
 
 ###################
 # log4r日志模块配置 #
@@ -48,7 +46,7 @@ formatter = Log4r::PatternFormatter.new(
   :pattern => "%C[%l]: %M"
   #:pattern => "%C[%l]:[%t] %M",
   #:date_format => "%Y/%m/%d %H:%M:%S"
-)  
+)
 logfile = Log4r::FileOutputter.new(
   "log",
   {
@@ -57,17 +55,6 @@ logfile = Log4r::FileOutputter.new(
     :trunc => true   # 下次运行是否先清空原先的日志文件内容
   })
 $logger.outputters = logfile
-
-#####################
-# MySQL数据库连接配置 #
-#####################
-ActiveRecord::Base.establish_connection(
-  :adapter  => "mysql2",
-  :host     => "localhost",
-  :username => "root",
-  :password => "mysql",
-  :database => "huuuunt"
-)
 
 ###################
 # CmdParse相关设置 #
@@ -82,29 +69,32 @@ end
 cmd.add_command(CmdParse::HelpCommand.new)
 cmd.add_command(CmdParse::VersionCommand.new)
 
-# 赛事名称等数据处理CMD
-match_cmd = MatchCmd.new
-match_cmd.add_command(MatchImportCmd.new)
-match_cmd.add_command(MatchExportCmd.new)
+## 所有命令列表
+commands = {
+  "MatchCmd" => ["MatchImportCmd", "MatchExportCmd"],
+  "TeamCmd" => ["TeamImportCmd", "TeamExportCmd"],
+  "ResultCmd" => ["ResultDownloadCmd", "ResultPreprocessCmd", "ResultUpdateCmd"]
+  #"" => ["", "", ""]
+}
 
-# 球队名称等数据处理CMD
-team_cmd = TeamCmd.new
-team_cmd.add_command(TeamImportCmd.new)
-team_cmd.add_command(TeamExportCmd.new)
+commands.each do |m_cmd, s_cmds|
+  src = <<-END_SRC
+    new_cmd = #{m_cmd}.new
+    cmd.add_command(new_cmd)
+  END_SRC
+  eval src
+  s_cmds.each do |s_cmd|
+    src = "new_cmd.add_command(#{s_cmd}.new)"
+    eval src
+  end
+end
 
-# 赛果数据处理CMD
-result_cmd = ResultCmd.new
-result_cmd.add_command(ResultDownloadCmd.new)
-result_cmd.add_command(ResultPreprocessCmd.new)
-result_cmd.add_command(ResultUpdateCmd.new)
-result_cmd.add_command(ResultDPUCmd.new)
-
-################################
-# 将所有一级命令挂载到CmdParse实例 #
-################################
-cmd.add_command(match_cmd)
-cmd.add_command(team_cmd)
-cmd.add_command(result_cmd)
+## 赛事名称等数据处理CMD
+#match_cmd = MatchCmd.new
+#match_cmd.add_command(MatchImportCmd.new)
+#match_cmd.add_command(MatchExportCmd.new)
+#
+#cmd.add_command(match_cmd)
 
 # CmdParse开始解析命令
 cmd.parse

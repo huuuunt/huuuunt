@@ -26,7 +26,7 @@ class TeamCtrl
     team_sheet = book.worksheet("team")
 
     # 写入team_infos数据库表
-    ActiveRecord::Base.connection.execute("TRUNCATE table team_infos")
+    ActiveRecord::Base.connection.execute("TRUNCATE table #{$tab['team_info']}")
     teams = []
     team_sheet.each do |row|
       next if row[1] == "TeamName"
@@ -42,7 +42,7 @@ class TeamCtrl
 
     # 写入team_other_infos数据库表
     team_others = []
-    ActiveRecord::Base.connection.execute("TRUNCATE table team_other_infos")
+    ActiveRecord::Base.connection.execute("TRUNCATE table #{$tab['team_other_info']}")
     team_sheet.each do |row|
       next if row[1] == "TeamName"
       start = 9

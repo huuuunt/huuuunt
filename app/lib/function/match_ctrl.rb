@@ -32,7 +32,7 @@ class MatchCtrl
     country_sheet = book.worksheet("country")
         
     # 写入countries数据库表    
-    ActiveRecord::Base.connection.execute("TRUNCATE table countries")
+    ActiveRecord::Base.connection.execute("TRUNCATE table #{$tab['country']}")
     countries = []
     country_sheet.each do |row|
       next if row[0] == "CountryId"      
@@ -46,7 +46,7 @@ class MatchCtrl
     Country.import(countries)
    
     # 写入match_infos数据库表
-    ActiveRecord::Base.connection.execute("TRUNCATE table match_infos")
+    ActiveRecord::Base.connection.execute("TRUNCATE table #{$tab['match_info']}")
     match_infos = []
     match_sheet.each do |row|
       next if row[1] == "MatchName"
@@ -66,7 +66,7 @@ class MatchCtrl
     MatchInfo.import(match_infos)
 
     # 写入match_other_infos数据库表
-    ActiveRecord::Base.connection.execute("TRUNCATE table match_other_infos")
+    ActiveRecord::Base.connection.execute("TRUNCATE table #{$tab['match_other_info']}")
     match_others = []
     match_sheet.each do |row|
       next if row[1] == "MatchName"

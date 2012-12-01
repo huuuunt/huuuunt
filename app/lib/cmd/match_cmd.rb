@@ -3,6 +3,8 @@
 require 'rubygems'
 require 'cmdparse'
 
+require 'function/match_ctrl'
+
 class MatchCmd < CmdParse::Command
   def initialize
     super('match', true)
