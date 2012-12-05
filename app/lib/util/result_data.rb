@@ -1,4 +1,7 @@
 
+require 'rubygems'
+require 'hpricot'
+
 require 'mysql/match_info'
 require 'mysql/team_info'
 
@@ -10,12 +13,7 @@ module Huuuunt
     
     # 判断数据文件是否已经存在
     def result_data_file_exist?(date, path)
-      data_file = File.expand_path("#{date.year}/#{date.month}/#{date.to_s}.html", path)
-      if File.exist?(data_file)
-        $logger.debug("#{data_file} exist!")
-        return true
-      end
-      return false
+      return data_file_exist?(date, path, 'html')
     end
 
     # 赛果数据中赛事名称预处理
@@ -76,7 +74,7 @@ module Huuuunt
       return if result_data_file_exist?(date, path)
 
       # bet007赛果数据URL
-      result_url = "http://bf.bet007.com/Over_matchdate.aspx?matchdate=#{date}&team=&sclass="
+      result_url = "http://bf.bet007.com/Over_matchdate.aspx?matchdate=#{date.to_s}&team=&sclass="
 
       begin
         # 代理服务器设置

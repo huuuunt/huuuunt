@@ -54,10 +54,10 @@ class ResultCtrl
 
   def self.date_loop
     # 读取需要更新数据的日期，顺序下载
-    start_date = Result.lastest_date("Date")
-    end_date = now_date("Date")
-#    start_date = Date.parse("2012-09-09")
-#    end_date = Date.parse("2012-09-10")
+#    start_date = Result.lastest_date("Date")
+#   end_date = now_date("Date")
+    start_date = Date.parse("2012-09-09")
+    end_date = Date.parse("2012-09-10")
 
     while start_date <= end_date
       yield start_date

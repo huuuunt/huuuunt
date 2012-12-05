@@ -3,6 +3,8 @@
 require 'rubygems'
 require 'cmdparse'
 
+require 'function/europe_ctrl'
+
 class EuropeCmd < CmdParse::Command
   def initialize
     super('europe', true)
@@ -32,6 +34,18 @@ class EuropePreprocessCmd < CmdParse::Command
 
   def execute(args)
     EuropeCtrl.preprocess(args)
+  end
+end
+
+class EuropeCheckResultCmd < CmdParse::Command
+    def initialize
+    super('checkresult', false)
+    self.short_desc = "检查欧洲赔率数据是否在赛果数据中存在"
+    self.description = "检查欧洲赔率数据是否在赛果数据中存在"
+  end
+
+  def execute(args)
+    EuropeCtrl.resultcheck(args)
   end
 end
 

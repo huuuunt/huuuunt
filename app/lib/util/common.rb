@@ -1,4 +1,6 @@
 
+require 'iconv'
+
 module Huuuunt
   module Common
     def self.included(base)

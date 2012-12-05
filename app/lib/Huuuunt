@@ -35,6 +35,7 @@ require 'cmdparse'
 require 'cmd/match_cmd'
 require 'cmd/team_cmd'
 require 'cmd/result_cmd'
+require 'cmd/europe_cmd'
 
 ###################
 # log4r日志模块配置 #
@@ -69,11 +70,13 @@ end
 cmd.add_command(CmdParse::HelpCommand.new)
 cmd.add_command(CmdParse::VersionCommand.new)
 
+# 注意：MatchCmd这个类必须存在，否则报错。
 ## 所有命令列表
 commands = {
   "MatchCmd" => ["MatchImportCmd", "MatchExportCmd"],
   "TeamCmd" => ["TeamImportCmd", "TeamExportCmd"],
-  "ResultCmd" => ["ResultDownloadCmd", "ResultPreprocessCmd", "ResultUpdateCmd"]
+  "ResultCmd" => ["ResultDownloadCmd", "ResultPreprocessCmd", "ResultUpdateCmd"],
+  "EuropeCmd" => ["EuropeDownloadCmd", "EuropePreprocessCmd", "EuropeCheckResultCmd", "EuropeUpdateCmd"]
   #"" => ["", "", ""]
 }
 
