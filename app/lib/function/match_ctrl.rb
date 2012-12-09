@@ -3,7 +3,7 @@
 require 'rubygems'
 require 'spreadsheet'
 
-require 'mysql/match_info'
+require 'mysql/match'
 require 'util/excel'
 
 class MatchCtrl
@@ -14,7 +14,7 @@ class MatchCtrl
   # match excel 字段名称
   MATCH_COLS_NAME = [
     "MatchNo", "MatchName", "Country", "Region", "MatchNameTn", "MatchNameEn",
-    "MatchNameJp", "MatchType", "MatchColor", "IsStat", "Bet007MatchId",
+    "MatchNameJp", "MatchType", "MatchColor", "NeedImport", "Bet007MatchId",
     "Phases", "SeasonType", "",
     "MatchName1", "MatchName2", "MatchName3", "MatchName4", "MatchName5",
     "MatchName6", "MatchName7", "MatchName8", "MatchName9", "MatchName10"
@@ -46,12 +46,12 @@ class MatchCtrl
     Country.import(countries)
    
     # 写入match_infos数据库表
-    ActiveRecord::Base.connection.execute("TRUNCATE table #{$tab['match_info']}")
+    ActiveRecord::Base.connection.execute("TRUNCATE table #{$tab['match']}")
     match_infos = []
     match_sheet.each do |row|
       next if row[1] == "MatchName"
       country_id = Country.where("name_cn = ?", row[2]).first.id if get_cell_val(row[2])
-      match_infos << MatchInfo.new(:match_id => row[0],
+      match_infos << Match.new(:match_id => row[0],
                                :name_cn => row[1],
                                :name_tc => row[4],
                                :name_en => row[5],
@@ -63,20 +63,20 @@ class MatchCtrl
                                :phases => row[11],
                                :season_type => row[12])
     end
-    MatchInfo.import(match_infos)
+    Match.import(match_infos)
 
     # 写入match_other_infos数据库表
-    ActiveRecord::Base.connection.execute("TRUNCATE table #{$tab['match_other_info']}")
+    ActiveRecord::Base.connection.execute("TRUNCATE table #{$tab['match_other']}")
     match_others = []
     match_sheet.each do |row|
       next if row[1] == "MatchName"
       start = 14
       while get_cell_val(row[start])
-        match_others << MatchOtherInfo.new(:match_id => row[0], :name => row[start])
+        match_others << MatchOther.new(:match_id => row[0], :name => row[start])
         start += 1
       end
     end
-    MatchOtherInfo.import(match_others)
+    MatchOther.import(match_others)
   end
 
   # 将赛事名称等相关数据导出到Excel中
@@ -97,7 +97,7 @@ class MatchCtrl
     end
 
     # 读取数据库表match_infos，并按字段名称写入match中
-    MatchInfo.all.each do |m|
+    Match.all.each do |m|
       index = m.match_id
       match_sheet[index, 0] = m.match_id
       match_sheet[index, 1] = m.name_cn
@@ -114,14 +114,14 @@ class MatchCtrl
     end
 
     # country信息需要读取countries数据表,写入match中
-    MatchInfo.get_country_name.each do |m|
+    Match.get_country_name.each do |m|
       index = m.match_id
       match_sheet[index, 2] = m.country_name
     end
 
     # 读取match_other_infos数据库表，按字段名称写入match中
     c = Hash.new(14)
-    MatchOtherInfo.order("match_id").each do |mo|
+    MatchOther.order("match_id").each do |mo|
       index = mo.match_id
       match_sheet[index, c[index]] = mo.name
       c[index] += 1

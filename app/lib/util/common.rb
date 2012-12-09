@@ -7,7 +7,6 @@ module Huuuunt
       base.extend Huuuunt::Common
     end
 
-
     # 为避免赛果数据为空时，使用0会带来的误解，改用"-1"表示为空的赛果
     def gooooal(goal)
       return -1 if goal==nil || goal.size==0
@@ -47,6 +46,25 @@ module Huuuunt
       return nil if utf8==nil || utf8.length==0
       return Iconv.iconv("GBK", "UTF-8", utf8.strip)[0]
     end
+
+    # Example: finrate (0.75)
+    def calc_asia_result(finrate, direction, goal1, goal2)
+      result = (goal1 - goal2) * 4 - ((finrate * 4).to_i)*direction
+      #puts "result = #{result} "
+      result = result.to_i
+      if result <= -2
+        return -2
+      elsif result == -1
+        return -1
+      elsif result == 0
+        return 0
+      elsif result == 1
+        return 1
+      elsif result >= 2
+        return 2
+      end
+    end
+
 
 
   end

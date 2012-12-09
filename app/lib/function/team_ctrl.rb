@@ -3,7 +3,7 @@
 require 'rubygems'
 require 'spreadsheet'
 
-require 'mysql/team_info'
+require 'mysql/team'
 require 'util/excel'
 
 class TeamCtrl
@@ -30,7 +30,7 @@ class TeamCtrl
     teams = []
     team_sheet.each do |row|
       next if row[1] == "TeamName"
-      teams << TeamInfo.new( :team_id => row[0],
+      teams << Team.new( :team_id => row[0],
                              :name_cn => row[1],
                              :name_tc => row[4],
                              :name_en => row[5],
@@ -38,7 +38,7 @@ class TeamCtrl
                              :match_id => row[3]
                      )
     end
-    TeamInfo.import(teams)
+    Team.import(teams)
 
     # 写入team_other_infos数据库表
     team_others = []
@@ -47,11 +47,11 @@ class TeamCtrl
       next if row[1] == "TeamName"
       start = 9
       while get_cell_val(row[start])
-        team_others << TeamOtherInfo.new(:team_id => row[0], :name => row[start])
+        team_others << TeamOther.new(:team_id => row[0], :name => row[start])
         start += 1
       end
     end
-    TeamOtherInfo.import(team_others)
+    TeamOther.import(team_others)
   end
 
   # 将球队名称等相关数据导出到Excel中
@@ -69,12 +69,12 @@ class TeamCtrl
 
     # 读取球队对应的赛事名称，保存成hash
     match = {}
-    MatchInfo.get_all_matchname.each do |m|
+    Match.get_all_matchname.each do |m|
       match[m.match_id] = m.name_cn
     end
     
     # 读取数据库表team_infos，并按字段名称写入team中
-    TeamInfo.all.each do |t|
+    Team.all.each do |t|
       index = t.team_id
       team_sheet[index, 0] = t.team_id
       team_sheet[index, 1] = t.name_cn
@@ -87,7 +87,7 @@ class TeamCtrl
 
     # 读取team_other_infos数据库表，按字段名称写入team中
     c = Hash.new(9)
-    TeamOtherInfo.order("team_id").each do |to|
+    TeamOther.order("team_id").each do |to|
       index = to.team_id
       team_sheet[index, c[index]] = to.name
       c[index] += 1

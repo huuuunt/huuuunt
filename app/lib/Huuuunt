@@ -36,6 +36,8 @@ require 'cmd/match_cmd'
 require 'cmd/team_cmd'
 require 'cmd/result_cmd'
 require 'cmd/europe_cmd'
+require 'cmd/asia_cmd'
+require 'cmd/schedule_cmd'
 
 ###################
 # log4r日志模块配置 #
@@ -76,7 +78,9 @@ commands = {
   "MatchCmd" => ["MatchImportCmd", "MatchExportCmd"],
   "TeamCmd" => ["TeamImportCmd", "TeamExportCmd"],
   "ResultCmd" => ["ResultDownloadCmd", "ResultPreprocessCmd", "ResultUpdateCmd"],
-  "EuropeCmd" => ["EuropeDownloadCmd", "EuropePreprocessCmd", "EuropeCheckResultCmd", "EuropeUpdateCmd"]
+  "EuropeCmd" => ["EuropeDownloadCmd", "EuropePreprocessCmd", "EuropeCheckResultCmd", "EuropeUpdateCmd"],
+  "AsiaCmd" => ["AsiaDownloadCmd", "AsiaPreprocessCmd", "AsiaCheckResultCmd", "AsiaUpdateCmd"],
+  "ScheduleCmd" => ["ScheduleDownloadCmd", "SchedulePreprocessCmd", "ScheduleUpdateCmd"]
   #"" => ["", "", ""]
 }
 

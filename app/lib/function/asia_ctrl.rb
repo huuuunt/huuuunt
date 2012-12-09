@@ -1,30 +1,30 @@
-# 欧洲赔率数据导入程序
+# 亚洲赔率数据导入程序
 
-require 'mysql/europe'
+require 'mysql/asia'
 
 require 'util/date_tool'
 require 'util/data_file'
-require 'util/europe_data'
+require 'util/asia_data'
 
-class EuropeCtrl
+class AsiaCtrl
 
   include Huuuunt::DateTool
   include Huuuunt::DataFile
-  include Huuuunt::EuropeData
+  include Huuuunt::AsiaData
   include Huuuunt::Common
 
-  EUROPEPATH = File.expand_path("../../data/europe/", File.dirname(__FILE__))
+  ASIAPATH = File.expand_path("../../data/asia/", File.dirname(__FILE__))
 
   # 默认下载数据到最新日期为止
   def self.download(args)
     date_loop do |date|
-      download_europe_data(date, EUROPEPATH)
+      download_asia_data(date, ASIAPATH)
     end
   end
 
   def self.preprocess(args)
     date_loop do |date|
-      xml_file = data_file_path(date, EUROPEPATH, 'xml')
+      xml_file = data_file_path(date, ASIAPATH, 'xml')
       return unless File.exist?(xml_file)
 
       # 验证赛事名称和球队名称是否已经在数据库中存在，否则批量插入新的赛事名称和球队名称
@@ -38,20 +38,20 @@ class EuropeCtrl
 
   def self.resultcheck(args)
     date_loop do |date|
-      xml_file = data_file_path(date, EUROPEPATH, 'xml')
+      xml_file = data_file_path(date, ASIAPATH, 'xml')
       return unless File.exist?(xml_file)
 
       # 验证要插入的赔率数据在赛果数据中已经存在
-      return unless all_europe_in_result?(date, xml_file)
+      return unless all_asia_in_result?(date, xml_file)
     end
   end
 
   def self.update(args)
     date_loop do |date|
-      xml_file = data_file_path(date, EUROPEPATH, 'xml')
+      xml_file = data_file_path(date, ASIAPATH, 'xml')
       return unless File.exist?(xml_file)
 
-      insert_europe_data(date, xml_file)
+      insert_asia_data(date, xml_file)
     end
   end
 
@@ -63,9 +63,11 @@ class EuropeCtrl
     # 读取需要更新数据的日期，顺序下载
     #start_date = Europe.latest_date("Date")
     #end_date = now_date("Date")
+
     start_date = Date.parse("2012-09-09")
     end_date = Date.parse("2012-09-10")
 puts "#{start_date}, #{end_date}"
+
     while start_date <= end_date
       yield start_date
       start_date = start_date.succ

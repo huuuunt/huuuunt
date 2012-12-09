@@ -2,8 +2,8 @@
 require 'rubygems'
 require 'hpricot'
 
-require 'mysql/match_info'
-require 'mysql/team_info'
+require 'mysql/match'
+require 'mysql/team'
 
 module Huuuunt
   module ResultData
@@ -126,7 +126,7 @@ module Huuuunt
           details = match.split(';')
           match_name = gbk2utf8(details[0])          # 美乙
 
-          next unless MatchHelper.match_need_stat?(match_name)
+          next unless MatchHelper.match_need_import?(match_name)
           
           match_id = MatchHelper.get_match_id_by_name(match_name)
 
@@ -169,7 +169,7 @@ module Huuuunt
         
         match_name = gbk2utf8(details[0])
 
-        next unless MatchHelper.match_need_stat?(match_name)
+        next unless MatchHelper.match_need_import?(match_name)
 
         team1_name = gbk2utf8(details[3])
         team2_name = gbk2utf8(details[5])
