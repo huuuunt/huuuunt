@@ -1,5 +1,5 @@
 # huuuunt git ignore file type
-mysql/
+#mysql/
 doc/
 web/
 db_convert/

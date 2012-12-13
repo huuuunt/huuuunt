@@ -57,7 +57,7 @@ class MatchCtrl
                                :name_en => row[5],
                                :name_jp => row[6],
                                :match_color => row[8],
-                               :is_stat => row[9],
+                               :need_import => row[9],
                                :country_id => country_id,
                                :bet007_match_id => row[10],
                                :phases => row[11],
@@ -107,7 +107,7 @@ class MatchCtrl
       match_sheet[index, 6] = m.name_jp
 
       match_sheet[index, 8] = m.match_color
-      match_sheet[index, 9] = m.is_stat
+      match_sheet[index, 9] = m.need_import
       match_sheet[index, 10] = m.bet007_match_id
       match_sheet[index, 11] = m.phases
       match_sheet[index, 12] = m.season_type

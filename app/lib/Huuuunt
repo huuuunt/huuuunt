@@ -72,8 +72,7 @@ end
 cmd.add_command(CmdParse::HelpCommand.new)
 cmd.add_command(CmdParse::VersionCommand.new)
 
-# 注意：MatchCmd这个类必须存在，否则报错。
-## 所有命令列表
+# 所有命令列表
 commands = {
   "MatchCmd" => ["MatchImportCmd", "MatchExportCmd"],
   "TeamCmd" => ["TeamImportCmd", "TeamExportCmd"],
