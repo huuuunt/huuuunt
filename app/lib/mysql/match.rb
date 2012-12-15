@@ -12,7 +12,7 @@ class Match < ActiveRecord::Base
   @@match_id_map = {}
 
   Match.all.each do |match|
-    @@match_name_map[match.name_cn] = { "id" => match.match_id, "import" => match.need_import }
+    @@match_name_map[match.name_cn] = { "id" => match.match_id.to_i, "import" => match.need_import }
     1.upto(10) do |x|
       src = <<-END_SRC
         @@match_name_map[match.name#{x}] = { "id" => match.match_id, "import" => match.need_import } if match.name#{x}
@@ -30,9 +30,9 @@ class Match < ActiveRecord::Base
 
   Match.where("season_type!=0").each do |match|
     @@match_need_stat[match.match_id] = {
-                                          "bet007" => match.bet007_match_id,
-                                          "phases" => match.phases ,
-                                          "type"   => match.season_type
+                                          "bet007" => match.bet007_match_id.to_i,
+                                          "phases" => match.phases.to_i ,
+                                          "type"   => match.season_type.to_i
                                         }
   end
 
@@ -59,6 +59,10 @@ class Match < ActiveRecord::Base
 
     def get_all_matchname
       find_by_sql("select match_id, name_cn from #{$tab['match']}")
+    end
+
+    def update_match_name_map(match_name, match_id)
+      @@match_name_map[match_name] = { "id" => match_id, "import" => 0 }
     end
 
     # 判断赛事名称是否已经在数据库中存在，从@@match_name_map中判断
@@ -121,6 +125,8 @@ class Match < ActiveRecord::Base
                                :bet007_match_id => 0,
                                :phases => 0,
                                :season_type => 0)
+        # 更新缓存数据
+        update_match_name_map(name, id+index)
       end
 
       Match.import(match_infos)
@@ -159,7 +165,7 @@ class Match < ActiveRecord::Base
             END_SRC
             eval src
           end
-          #match_others << MatchOther.new(:match_id => match_id, :name => name_tw)
+          update_match_name_map(name_tw, match_id)
         end
 
         if match_name_exist?(name_tw)
@@ -176,11 +182,9 @@ class Match < ActiveRecord::Base
             END_SRC
             eval src
           end
-          #match_others << MatchOther.new(:match_id => match_id, :name => name_cn)
+          update_match_name_map(name_cn, match_id)
         end
       end
-
-      #MatchOther.import(match_others)
     end
   end
 end

@@ -33,6 +33,11 @@ class Team < ActiveRecord::Base
 #  end
 
   class << self
+
+    def update_team_name_map(team_name, team_id)
+      @@team_name_map[team_name] = { "id" => team_id }
+    end
+    
     # 判断球队名称是否已经在数据库中存在，从@@team_name_map中判断
     def team_name_exist?(name)
       @@team_name_map[name]
@@ -64,6 +69,7 @@ class Team < ActiveRecord::Base
                                    :name_jp => '',
                                    :match_id => item['match_id']
                      )
+        update_team_name_map(item['team_name'], id+index)
       end
 
       Team.import(team_infos)
@@ -102,7 +108,7 @@ class Team < ActiveRecord::Base
             END_SRC
             eval src
           end
-          #team_others << TeamOther.new(:team_id => team_id, :name => name_tw)
+          update_team_name_map(name_tw, team_id)
         end
 
         if team_name_exist?(name_tw)
@@ -119,11 +125,9 @@ class Team < ActiveRecord::Base
             END_SRC
             eval src
           end
-          #team_others << TeamOther.new(:team_id => team_id, :name => name_cn)
+          update_team_name_map(name_cn, team_id)
         end
       end
-
-      #TeamOther.import(team_others)
     end
   end
 end
