@@ -37,6 +37,10 @@ class Team < ActiveRecord::Base
     def update_team_name_map(team_name, team_id)
       @@team_name_map[team_name] = { "id" => team_id }
     end
+
+    def update_team_id_map(team_name, team_id)
+      @@team_id_map[team_id] = { "cn" => team_name }
+    end
     
     # 判断球队名称是否已经在数据库中存在，从@@team_name_map中判断
     def team_name_exist?(name)
@@ -57,19 +61,23 @@ class Team < ActiveRecord::Base
       team_infos = []
       # 由于无法确定activerecord的import代码是否支持unique方式，因此在外部实现
       team_unique = []
-      team_name_arr.each_with_index do |item, index|
+      # 因为要去除重复的名称，就不能使用Array自带的each_with_index，需要外部定义一个index
+      index = 0
+      team_name_arr.each do |item|
         next if team_unique.include?(item['team_name'])
         team_unique << item['team_name']
         $logger.warn("insert new team name : #{item['team_name']}, #{Match.match_id_map[item['match_id'].to_i]['name']}")
-        
-        team_infos << Team.new(:team_id => id+index,
+
+        team_infos << Team.new(:team_id => id+index+1,
                                    :name_cn => item['team_name'],
                                    :name_tw => '',
                                    :name_en => '',
                                    :name_jp => '',
                                    :match_id => item['match_id']
                      )
-        update_team_name_map(item['team_name'], id+index)
+        update_team_name_map(item['team_name'], id+index+1)
+        update_team_id_map(item['team_name'], id+index+1)
+        index += 1
       end
 
       Team.import(team_infos)

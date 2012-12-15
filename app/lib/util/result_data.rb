@@ -155,13 +155,14 @@ module Huuuunt
       match_infos = get_new_match(csv)
       Match.insert_new_match_name(match_infos)
       
-      return match_infos.size if match_infos.size > 0
+      #return match_infos.size if match_infos.size > 0
 
       # 验证球队名称是否已经在数据库中存在，否则批量插入新的球队名称
       team_infos = get_new_team(csv)
       Team.insert_new_team_name(team_infos)
 
-      return team_infos.size
+      #return team_infos.size
+      0
     end
 
     # 读取csv文件中的赛事结果数据，导入数据库

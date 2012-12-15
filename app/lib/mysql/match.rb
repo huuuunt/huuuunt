@@ -65,6 +65,10 @@ class Match < ActiveRecord::Base
       @@match_name_map[match_name] = { "id" => match_id, "import" => 0 }
     end
 
+    def update_match_id_map(match_name, match_id)
+      @@match_id_map[match_id] = { "name" => match_name, "import" => 0 }
+    end
+
     # 判断赛事名称是否已经在数据库中存在，从@@match_name_map中判断
     def match_name_exist?(name)
       @@match_name_map[name]
@@ -109,12 +113,14 @@ class Match < ActiveRecord::Base
       match_infos = []
       # 由于无法确定activerecord的import代码是否支持unique方式，因此在外部实现
       match_unique = []
-      match_name_arr.each_with_index do |name, index|
+      # 因为要去除重复的名称，就不能使用Array自带的each_with_index，需要外部定义一个index
+      index = 0
+      match_name_arr.each do |name|
         next if match_unique.include?(name)
         match_unique << name
         $logger.warn("insert new match name : #{name}")
 
-        match_infos << Match.new(:match_id => id+index,
+        match_infos << Match.new(:match_id => id+index+1,
                                :name_cn => name,
                                :name_tw => '',
                                :name_en => '',
@@ -126,7 +132,9 @@ class Match < ActiveRecord::Base
                                :phases => 0,
                                :season_type => 0)
         # 更新缓存数据
-        update_match_name_map(name, id+index)
+        update_match_name_map(name, id+index+1)
+        update_match_id_map(name, id+index+1)
+        index += 1
       end
 
       Match.import(match_infos)
