@@ -1,7 +1,9 @@
 
 require 'mysql/driver'
+require 'mysql/match'
 
-class TeamHelper
+class Team < ActiveRecord::Base
+
   cattr_accessor :team_name_map
   cattr_accessor :team_id_map
   @@team_name_map = {}
@@ -9,11 +11,26 @@ class TeamHelper
 
   Team.all.each do |team|
     @@team_name_map[team.name_cn] = { "id" => team.team_id }
+    1.upto(10) do |x|
+      src = <<-END_SRC
+        @@team_name_map[team.name#{x}] = { "id" => team.team_id } if team.name#{x}
+      END_SRC
+      eval src
+    end
     @@team_id_map[team.team_id] = { "cn" => team.name_cn }
   end
-  TeamOther.all.each do |team|
-    @@team_name_map[team.name] = { "id" => team.team_id }
-  end
+#  TeamOther.all.each do |team|
+#    @@team_name_map[team.name] = { "id" => team.team_id }
+#  end
+
+#  # 验证数据初始化成功代码
+#  @@team_name_map.each do |key, value|
+#    puts "#{key}, #{value['id']}, #{value['import']}"
+#  end
+
+#  @@team_id_map.each do |key, value|
+#    puts "#{key}, #{value['name']}, #{value['import']}"
+#  end
 
   class << self
     # 判断球队名称是否已经在数据库中存在，从@@team_name_map中判断
@@ -33,7 +50,13 @@ class TeamHelper
       id = Team.maximum('team_id')
 
       team_infos = []
+      # 由于无法确定activerecord的import代码是否支持unique方式，因此在外部实现
+      team_unique = []
       team_name_arr.each_with_index do |item, index|
+        next if team_unique.include?(item['team_name'])
+        team_unique << item['team_name']
+        $logger.warn("insert new team name : #{item['team_name']}, #{Match.match_id_map[item['match_id'].to_i]['name']}")
+        
         team_infos << Team.new(:team_id => id+index,
                                    :name_cn => item['team_name'],
                                    :name_tc => '',
@@ -67,18 +90,40 @@ class TeamHelper
         # 程序自动处理（name_cn和name_tw必然有一个已经在数据库中存在，需要将另外一个加入数据库）
         if team_name_exist?(name_cn)
           team_id = get_team_id_by_name(name_cn)
-          # 将name_tw写入team_other_infos数据库表中
-          team_others << TeamOther.new(:team_id => team_id, :name => name_tw)
+          # 将name_tw写入teams数据库表中
+          team = where("team_id = #{team_id}").first
+          1.upto(10) do |x|
+            src = <<-END_SRC
+              unless team.name#{x}
+                team.name#{x} = name_tw
+                team.save
+                break
+              end
+            END_SRC
+            eval src
+          end
+          #team_others << TeamOther.new(:team_id => team_id, :name => name_tw)
         end
 
         if team_name_exist?(name_tw)
           team_id = get_team_id_by_name(name_tw)
-          # 将name_cn写入team_other_infos数据库表中
-          team_others << TeamOther.new(:team_id => team_id, :name => name_cn)
+          # 将name_cn写入teams数据库表中
+          team = where("team_id = #{team_id}").first
+          1.upto(10) do |x|
+            src = <<-END_SRC
+              unless team.name#{x}
+                team.name#{x} = name_cn
+                team.save
+                break
+              end
+            END_SRC
+            eval src
+          end
+          #team_others << TeamOther.new(:team_id => team_id, :name => name_cn)
         end
       end
 
-      TeamOther.import(team_others)
+      #TeamOther.import(team_others)
     end
   end
 end

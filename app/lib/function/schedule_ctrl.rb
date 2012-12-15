@@ -62,7 +62,7 @@ class ScheduleCtrl
 
     # 验证match_set中的每个match_id是否需要统计
     match_set.each do |match_id|
-      return FALSE unless MatchHelper.match_need_stat?(match_id)
+      return FALSE unless Match.match_need_stat?(match_id)
     end
 
     return TRUE

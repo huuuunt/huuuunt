@@ -60,8 +60,8 @@ module Huuuunt
         # 如果都不存在，则需要手工处理，否则，由程序自动处理
 
         # 手工处理部分
-        if MatchHelper.match_name_exist?(name_cn) ||
-            MatchHelper.match_name_exist?(name_tw)
+        if Match.match_name_exist?(name_cn) ||
+            Match.match_name_exist?(name_tw)
           match_others << { :name_cn => name_cn, :name_tw => name_tw }
         else
           match_infos << {
@@ -74,7 +74,7 @@ module Huuuunt
       end
 
       # 写入match_other_infos数据库表中
-      MatchHelper.select_insert_match_name(match_others)
+      Match.select_insert_match_name(match_others)
       
       return match_infos
     end
@@ -94,8 +94,8 @@ module Huuuunt
         a_name_cn, a_name_tw, a_name_en = away_arr.split(",")
 
         # 判断该赛事是否要纳入统计(赛事名称无法识别的情况同样返回FALSE)
-        unless MatchHelper.match_need_import?(m_name_cn)
-          unless MatchHelper.match_need_import?(m_name_tw)
+        unless Match.match_need_import?(m_name_cn)
+          unless Match.match_need_import?(m_name_tw)
             next
           end
         end
@@ -104,8 +104,8 @@ module Huuuunt
         # 如果都不存在，则需要手工处理，否则，由程序自动处理
 
         # 手工处理
-        if TeamHelper.team_name_exist?(h_name_cn) ||
-            TeamHelper.team_name_exist?(h_name_tw)
+        if Team.team_name_exist?(h_name_cn) ||
+            Team.team_name_exist?(h_name_tw)
           # 如果有一个能够识别，则把另外一个写入team_other_infos数据库表
           team_others << { :name_cn => h_name_cn, :name_tc => h_name_tw }
         else
@@ -118,8 +118,8 @@ module Huuuunt
           }
         end
 
-        if TeamHelper.team_name_exist?(a_name_cn) ||
-            TeamHelper.team_name_exist?(a_name_tw)
+        if Team.team_name_exist?(a_name_cn) ||
+            Team.team_name_exist?(a_name_tw)
           # 如果有一个能够识别，则把另外一个写入team_other_infos数据库表
           team_others << { :name_cn => a_name_cn, :name_tc => a_name_tw }
         else
@@ -133,7 +133,7 @@ module Huuuunt
         end
       end
 
-      TeamHelper.select_insert_team_name(team_others)
+      Team.select_insert_team_name(team_others)
 
       return team_infos
     end
@@ -196,15 +196,15 @@ module Huuuunt
         status = status.to_i
 
         # 判断赛事是否需要纳入统计
-        next unless MatchHelper.match_need_import?(name_cn)
+        next unless Match.match_need_import?(name_cn)
 
         # 如果赛事未结束，则不处理
         next if status==-12 || status==-14
         
         match_datetime = "#{date.to_s} #{match_time}"
-        match_id = MatchHelper.get_match_id_by_name(name_cn)
-        home_team_id = TeamHelper.get_team_id_by_name(home_cn)
-        away_team_id = TeamHelper.get_team_id_by_name(away_cn)
+        match_id = Match.get_match_id_by_name(name_cn)
+        home_team_id = Team.get_team_id_by_name(home_cn)
+        away_team_id = Team.get_team_id_by_name(away_cn)
 
         matchinfono = create_matchinfono(date.to_s, match_id, home_team_id, away_team_id)
 
@@ -235,15 +235,15 @@ module Huuuunt
         peilv_arr = peilv.split(';')
 
         # 判断赛事是否需要纳入统计
-        next unless MatchHelper.match_need_import?(name_cn)
+        next unless Match.match_need_import?(name_cn)
 
         # 如果赛事未结束，则不处理
         next if status==-12 || status==-14
 
         match_date = date.to_s
-        match_id = MatchHelper.get_match_id_by_name(name_cn)
-        home_id = TeamHelper.get_team_id_by_name(home_cn)
-        away_id = TeamHelper.get_team_id_by_name(away_cn)
+        match_id = Match.get_match_id_by_name(name_cn)
+        home_id = Team.get_team_id_by_name(home_cn)
+        away_id = Team.get_team_id_by_name(away_cn)
 
         matchinfono = create_matchinfono(date.to_s, match_id, home_id, away_id)
 

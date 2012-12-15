@@ -26,7 +26,7 @@ class TeamCtrl
     team_sheet = book.worksheet("team")
 
     # 写入team_infos数据库表
-    ActiveRecord::Base.connection.execute("TRUNCATE table #{$tab['team_info']}")
+    ActiveRecord::Base.connection.execute("TRUNCATE table #{$tab['team']}")
     teams = []
     team_sheet.each do |row|
       next if row[1] == "TeamName"
@@ -35,23 +35,33 @@ class TeamCtrl
                              :name_tc => row[4],
                              :name_en => row[5],
                              :name_jp => row[6],
-                             :match_id => row[3]
+                             :match_id => row[3],
+                             :name1  => get_cell_val(row[9]),
+                             :name2  => get_cell_val(row[10]),
+                             :name3  => get_cell_val(row[11]),
+                             :name4  => get_cell_val(row[12]),
+                             :name5  => get_cell_val(row[13]),
+                             :name6  => get_cell_val(row[14]),
+                             :name7  => get_cell_val(row[15]),
+                             :name8  => get_cell_val(row[16]),
+                             :name9  => get_cell_val(row[17]),
+                             :name10 => get_cell_val(row[18])
                      )
     end
     Team.import(teams)
 
-    # 写入team_other_infos数据库表
-    team_others = []
-    ActiveRecord::Base.connection.execute("TRUNCATE table #{$tab['team_other_info']}")
-    team_sheet.each do |row|
-      next if row[1] == "TeamName"
-      start = 9
-      while get_cell_val(row[start])
-        team_others << TeamOther.new(:team_id => row[0], :name => row[start])
-        start += 1
-      end
-    end
-    TeamOther.import(team_others)
+#    # 写入team_other_infos数据库表
+#    team_others = []
+#    ActiveRecord::Base.connection.execute("TRUNCATE table #{$tab['team_other']}")
+#    team_sheet.each do |row|
+#      next if row[1] == "TeamName"
+#      start = 9
+#      while get_cell_val(row[start])
+#        team_others << TeamOther.new(:team_id => row[0], :name => row[start])
+#        start += 1
+#      end
+#    end
+#    TeamOther.import(team_others)
   end
 
   # 将球队名称等相关数据导出到Excel中
@@ -83,15 +93,26 @@ class TeamCtrl
       team_sheet[index, 4] = t.name_tc
       team_sheet[index, 5] = t.name_en
       team_sheet[index, 6] = t.name_jp
+
+      team_sheet[index, 9] = t.name1
+      team_sheet[index, 10] = t.name2
+      team_sheet[index, 11] = t.name3
+      team_sheet[index, 12] = t.name4
+      team_sheet[index, 13] = t.name5
+      team_sheet[index, 14] = t.name6
+      team_sheet[index, 15] = t.name7
+      team_sheet[index, 16] = t.name8
+      team_sheet[index, 17] = t.name9
+      team_sheet[index, 18] = t.name10
     end    
 
-    # 读取team_other_infos数据库表，按字段名称写入team中
-    c = Hash.new(9)
-    TeamOther.order("team_id").each do |to|
-      index = to.team_id
-      team_sheet[index, c[index]] = to.name
-      c[index] += 1
-    end
+#    # 读取team_other_infos数据库表，按字段名称写入team中
+#    c = Hash.new(9)
+#    TeamOther.order("team_id").each do |to|
+#      index = to.team_id
+#      team_sheet[index, c[index]] = to.name
+#      c[index] += 1
+#    end
 
     # 写入match.xls文件
     book.write(TeamInfoFile)

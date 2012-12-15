@@ -35,7 +35,10 @@ module Huuuunt
       date_str = get_date_str(date)
       year,month,day = date_str.split('-')
       pathfile = File.expand_path("#{year}/#{month.to_i}/#{date_str}.#{suffix}", path)
-      return pathfile if File.exist?(pathfile)
+      if File.exist?(pathfile)
+        $logger.debug("#{pathfile} exist!!!")
+        return pathfile
+      end
       return false
     end
 

@@ -7,7 +7,7 @@ module Huuuunt
     
     def get_cell_val(value)
 
-      return value if value == nil
+      return nil if value == nil || value.length==0
       
       case value
       when Float

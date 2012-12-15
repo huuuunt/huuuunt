@@ -13,7 +13,7 @@ module Huuuunt
     
     # 判断数据文件是否已经存在
     def result_data_file_exist?(date, path)
-      return data_file_exist?(date, path, 'html')
+      data_file_exist?(date, path, 'html')
     end
 
     # 赛果数据中赛事名称预处理
@@ -84,7 +84,7 @@ module Huuuunt
         $logger.error("#{path} download failed! #{ex}")
       end
 
-      $logger.debug("#{date} result download finished!")
+      $logger.debug("Result #{date} data download successfully!!!")
 
       # 计算数据文件保存路径
       result_html_file = data_file_path(date, path, 'html')
@@ -95,6 +95,8 @@ module Huuuunt
       # 将html文件转换成csv
       result_csv_file = data_file_path(date, path, 'csv')
       result_html2csv(result_html_file, result_csv_file)
+
+      $logger.debug("Result #{date} file convert to csv successfully!!!")
     end
 
     # 判断赛果数据中的赛事名称是否在数据库中已经存在
@@ -107,7 +109,7 @@ module Huuuunt
           details = match.split(';')
           match_name = gbk2utf8(details[0])          # 美乙
 
-          unless MatchHelper.match_name_exist?(match_name)
+          unless Match.match_name_exist?(match_name)
             match_infos << match_name
           end
         end
@@ -126,17 +128,17 @@ module Huuuunt
           details = match.split(';')
           match_name = gbk2utf8(details[0])          # 美乙
 
-          next unless MatchHelper.match_need_import?(match_name)
+          next unless Match.match_need_import?(match_name)
           
-          match_id = MatchHelper.get_match_id_by_name(match_name)
+          match_id = Match.get_match_id_by_name(match_name)
 
           team1_name = gbk2utf8(details[3])
           team2_name = gbk2utf8(details[5])
 
-          unless TeamHelper.team_name_exist?(team1_name)
+          unless Team.team_name_exist?(team1_name)
             team_infos << { "team_name" => team1_name, "match_id" => match_id }
           end
-          unless TeamHelper.team_name_exist?(team2_name)
+          unless Team.team_name_exist?(team2_name)
             team_infos << { "team_name" => team2_name, "match_id" => match_id }
           end
         end
@@ -151,13 +153,15 @@ module Huuuunt
     def preprocess_match_team(csv)
       # 验证赛事名称是否已经在数据库中存在，否则批量插入新的赛事名称
       match_infos = get_new_match(csv)
-      MatchHelper.insert_new_match_name(match_infos)
+      Match.insert_new_match_name(match_infos)
+      
+      return match_infos.size if match_infos.size > 0
 
       # 验证球队名称是否已经在数据库中存在，否则批量插入新的球队名称
       team_infos = get_new_team(csv)
-      TeamHelper.insert_new_team_name(team_infos)
+      Team.insert_new_team_name(team_infos)
 
-      return match_infos.size+team_infos.size
+      return team_infos.size
     end
 
     # 读取csv文件中的赛事结果数据，导入数据库
@@ -169,7 +173,7 @@ module Huuuunt
         
         match_name = gbk2utf8(details[0])
 
-        next unless MatchHelper.match_need_import?(match_name)
+        next unless Match.match_need_import?(match_name)
 
         team1_name = gbk2utf8(details[3])
         team2_name = gbk2utf8(details[5])
@@ -179,9 +183,9 @@ module Huuuunt
         match_half_goal = details[6].strip     # 0-0  # strip删除换行符\n
 
         # 获取赛事ID、主客队球队ID
-        match_id = MatchHelper.get_match_id_by_name(match_name)
-        team1_id = TeamHelper.get_team_id_by_name(team1_name)
-        team2_id = TeamHelper.get_team_id_by_name(team2_name)
+        match_id = Match.get_match_id_by_name(match_name)
+        team1_id = Team.get_team_id_by_name(team1_name)
+        team2_id = Team.get_team_id_by_name(team2_name)
         # 计算半全场进球情况
         goal1,goal2 = match_goal.split('-')
         h_goal1,h_goal2 = match_half_goal.split('-')
@@ -222,6 +226,7 @@ module Huuuunt
                                  :status => status
                      )
         else
+          $logger.warn("#{matchinfono} exist!!! --- #{match_dt}, #{Match.match_id_map[match_id]['name']}, #{Team.team_id_map[team1_id]['team_name']}, #{Team.team_id_map[team2_id]['team_name']}")
           return
         end
       end

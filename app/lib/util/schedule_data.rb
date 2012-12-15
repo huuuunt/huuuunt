@@ -114,17 +114,17 @@ module Huuuunt
     def schedule_match_phase_loop(season, match_set)
       # 如果match_set为空，则取出所有需要统计的赛事
       if match_set.size == 0
-        match_set = MatchHelper.match_need_stat.keys
+        match_set = Match.match_need_stat.keys
       end
 
       # 依次处理每个赛事
       match_set.each do |match_id|
         # 获取当前赛事的赛季轮次
-        phases = MatchHelper.get_phases(match_id)
+        phases = Match.get_phases(match_id)
         # 根据赛事ID重新计算season，因为输入的season都是2010格式，但是对于英超这样的赛事，season应该是2010-2011
-        new_season = "#{season}-#{season.to_i+1}" if MatchHelper.match_schedule_two_year?(match_id)
+        new_season = "#{season}-#{season.to_i+1}" if Match.match_schedule_two_year?(match_id)
         # 处理特殊赛事的phase数据
-        bet007_match_id = convert_special_bet007_id(MatchHelper.get_bet007_match_id(match_id))
+        bet007_match_id = convert_special_bet007_id(Match.get_bet007_match_id(match_id))
 
         # 依次处理每个轮次的数据
         1.upto(phases) do |phase_id|
@@ -164,7 +164,7 @@ module Huuuunt
 
     def display_new_teams(teams)
       new_teams.each do |team|
-        $logger.warning("#{team['team_name']}, #{MatchHelper.match_id_map[team['match_id']]['name']}, #{team['phase_id']}")
+        $logger.warning("#{team['team_name']}, #{Match.match_id_map[team['match_id']]['name']}, #{team['phase_id']}")
       end
     end
 
@@ -181,10 +181,10 @@ module Huuuunt
             team1_name = gbk2utf8(details[2])
             team2_name = gbk2utf8(details[4])
 
-            unless TeamHelper.team_name_exist?(team1_name)
+            unless Team.team_name_exist?(team1_name)
               new_teams << { "team_name" => team1_name, "match_id" => match_id, "phase_id" => phase_id }
             end
-            unless TeamHelper.team_name_exist?(team2_name)
+            unless Team.team_name_exist?(team2_name)
               new_teams << { "team_name" => team2_name, "match_id" => match_id, "phase_id" => phase_id }
             end
           end
@@ -210,8 +210,8 @@ module Huuuunt
             team1_name = gbk2utf8(details[2])
             team2_name = gbk2utf8(details[4])
 
-            team1_id = TeamHelper.get_team_id_by_name(team1_name)
-            team2_id = TeamHelper.get_team_id_by_name(team2_name)
+            team1_id = Team.get_team_id_by_name(team1_name)
+            team2_id = Team.get_team_id_by_name(team2_name)
 
             exit if Schedule.schedule_exist?(new_season, match_id, phase_id, team1_id, team2_id)
             schedule << Schedule.new(

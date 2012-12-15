@@ -61,22 +61,33 @@ class MatchCtrl
                                :country_id => country_id,
                                :bet007_match_id => row[10],
                                :phases => row[11],
-                               :season_type => row[12])
+                               :season_type => row[12],
+                               :name1  => get_cell_val(row[14]),
+                               :name2  => get_cell_val(row[15]),
+                               :name3  => get_cell_val(row[16]),
+                               :name4  => get_cell_val(row[17]),
+                               :name5  => get_cell_val(row[18]),
+                               :name6  => get_cell_val(row[19]),
+                               :name7  => get_cell_val(row[20]),
+                               :name8  => get_cell_val(row[21]),
+                               :name9  => get_cell_val(row[22]),
+                               :name10 => get_cell_val(row[23])
+                              )
     end
     Match.import(match_infos)
 
-    # 写入match_other_infos数据库表
-    ActiveRecord::Base.connection.execute("TRUNCATE table #{$tab['match_other']}")
-    match_others = []
-    match_sheet.each do |row|
-      next if row[1] == "MatchName"
-      start = 14
-      while get_cell_val(row[start])
-        match_others << MatchOther.new(:match_id => row[0], :name => row[start])
-        start += 1
-      end
-    end
-    MatchOther.import(match_others)
+#    # 写入match_other_infos数据库表
+#    ActiveRecord::Base.connection.execute("TRUNCATE table #{$tab['match_other']}")
+#    match_others = []
+#    match_sheet.each do |row|
+#      next if row[1] == "MatchName"
+#      start = 14
+#      while get_cell_val(row[start])
+#        match_others << MatchOther.new(:match_id => row[0], :name => row[start])
+#        start += 1
+#      end
+#    end
+#    MatchOther.import(match_others)
   end
 
   # 将赛事名称等相关数据导出到Excel中
@@ -111,6 +122,17 @@ class MatchCtrl
       match_sheet[index, 10] = m.bet007_match_id
       match_sheet[index, 11] = m.phases
       match_sheet[index, 12] = m.season_type
+
+      match_sheet[index, 14] = m.name1
+      match_sheet[index, 15] = m.name2
+      match_sheet[index, 16] = m.name3
+      match_sheet[index, 17] = m.name4
+      match_sheet[index, 18] = m.name5
+      match_sheet[index, 19] = m.name6
+      match_sheet[index, 20] = m.name7
+      match_sheet[index, 21] = m.name8
+      match_sheet[index, 22] = m.name9
+      match_sheet[index, 23] = m.name10
     end
 
     # country信息需要读取countries数据表,写入match中
@@ -119,13 +141,13 @@ class MatchCtrl
       match_sheet[index, 2] = m.country_name
     end
 
-    # 读取match_other_infos数据库表，按字段名称写入match中
-    c = Hash.new(14)
-    MatchOther.order("match_id").each do |mo|
-      index = mo.match_id
-      match_sheet[index, c[index]] = mo.name
-      c[index] += 1
-    end
+#    # 读取match_other_infos数据库表，按字段名称写入match中
+#    c = Hash.new(14)
+#    MatchOther.order("match_id").each do |mo|
+#      index = mo.match_id
+#      match_sheet[index, c[index]] = mo.name
+#      c[index] += 1
+#    end
 
     # 读取countries数据库表，写入country中
     Country.all.each do |c|

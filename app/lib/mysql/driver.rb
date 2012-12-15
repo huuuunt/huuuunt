@@ -3,7 +3,9 @@ require 'rubygems'
 require 'active_record'
 require 'activerecord-import'
 
-#ActiveRecord::Base.logger = Logger.new(STDOUT)
+SQLLOGPATH = File.expand_path("../../lib/log/mysql.log", File.dirname(__FILE__))
+
+ActiveRecord::Base.logger = Logger.new(SQLLOGPATH, 100, 128*1024*1024)
 
 #####################
 # MySQL数据库连接配置 #
