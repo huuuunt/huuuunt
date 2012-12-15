@@ -112,7 +112,7 @@ class Match < ActiveRecord::Base
 
         match_infos << Match.new(:match_id => id+index,
                                :name_cn => name,
-                               :name_tc => '',
+                               :name_tw => '',
                                :name_en => '',
                                :name_jp => '',
                                :match_color => '#000000',
@@ -135,8 +135,8 @@ class Match < ActiveRecord::Base
     def select_insert_match_name(match_name_arr)
       match_others = []
       match_name_arr.each do |item|
-        name_cn = item[:name_cn]
-        name_tw = item[:name_tw]
+        name_cn = item["name_cn"]
+        name_tw = item["name_tw"]
 
         # 如果都存在，则无需处理
         if match_name_exist?(name_cn) &&

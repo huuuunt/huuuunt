@@ -23,7 +23,7 @@ class Team < ActiveRecord::Base
 #    @@team_name_map[team.name] = { "id" => team.team_id }
 #  end
 
-#  # 验证数据初始化成功代码
+  # 验证数据初始化成功代码
 #  @@team_name_map.each do |key, value|
 #    puts "#{key}, #{value['id']}, #{value['import']}"
 #  end
@@ -59,7 +59,7 @@ class Team < ActiveRecord::Base
         
         team_infos << Team.new(:team_id => id+index,
                                    :name_cn => item['team_name'],
-                                   :name_tc => '',
+                                   :name_tw => '',
                                    :name_en => '',
                                    :name_jp => '',
                                    :match_id => item['match_id']
@@ -78,17 +78,17 @@ class Team < ActiveRecord::Base
     def select_insert_team_name(team_name_arr)
       team_others = []
       team_name_arr.each do |item|
-        name_cn = item[:name_cn]
-        name_tw = item[:name_tw]
+        name_cn = item["name_cn"]
+        name_tw = item["name_tw"]
 
         # 如果都存在，则无需处理
         if team_name_exist?(name_cn) &&
             team_name_exist?(name_tw)
           next
         end
-
+        
         # 程序自动处理（name_cn和name_tw必然有一个已经在数据库中存在，需要将另外一个加入数据库）
-        if team_name_exist?(name_cn)
+        if team_name_exist?(name_cn)          
           team_id = get_team_id_by_name(name_cn)
           # 将name_tw写入teams数据库表中
           team = where("team_id = #{team_id}").first

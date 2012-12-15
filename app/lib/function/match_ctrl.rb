@@ -53,7 +53,7 @@ class MatchCtrl
       country_id = Country.where("name_cn = ?", row[2]).first.id if get_cell_val(row[2])
       match_infos << Match.new(:match_id => row[0],
                                :name_cn => row[1],
-                               :name_tc => row[4],
+                               :name_tw => row[4],
                                :name_en => row[5],
                                :name_jp => row[6],
                                :match_color => row[8],
@@ -113,7 +113,7 @@ class MatchCtrl
       match_sheet[index, 0] = m.match_id
       match_sheet[index, 1] = m.name_cn
 
-      match_sheet[index, 4] = m.name_tc
+      match_sheet[index, 4] = m.name_tw
       match_sheet[index, 5] = m.name_en
       match_sheet[index, 6] = m.name_jp
 

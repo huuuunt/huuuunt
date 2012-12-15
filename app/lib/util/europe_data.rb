@@ -62,11 +62,11 @@ module Huuuunt
         # 手工处理部分
         if Match.match_name_exist?(name_cn) ||
             Match.match_name_exist?(name_tw)
-          match_others << { :name_cn => name_cn, :name_tw => name_tw }
+          match_others << { "name_cn" => name_cn, "name_tw" => name_tw }
         else
           match_infos << {
             "name_cn" => name_cn,
-            "name_tc" => name_tw,
+            "name_tw" => name_tw,
             "name_en" => name_en,
             "match_color" => match_color
           }
@@ -93,6 +93,8 @@ module Huuuunt
         h_name_cn, h_name_tw, h_name_en = home_arr.split(",")
         a_name_cn, a_name_tw, a_name_en = away_arr.split(",")
 
+        #$logger.debug("#{h_name_cn}, #{h_name_tw}, #{h_name_en}, #{a_name_cn}, #{a_name_tw}, #{a_name_en}")
+
         # 判断该赛事是否要纳入统计(赛事名称无法识别的情况同样返回FALSE)
         unless Match.match_need_import?(m_name_cn)
           unless Match.match_need_import?(m_name_tw)
@@ -107,28 +109,28 @@ module Huuuunt
         if Team.team_name_exist?(h_name_cn) ||
             Team.team_name_exist?(h_name_tw)
           # 如果有一个能够识别，则把另外一个写入team_other_infos数据库表
-          team_others << { :name_cn => h_name_cn, :name_tc => h_name_tw }
+          team_others << { "name_cn" => h_name_cn, "name_tw" => h_name_tw }
         else
           # 如果都不能识别
           team_infos << {
-            :name_cn => h_name_cn,
-            :name_tc => h_name_tw,
-            :name_en => h_name_en,
-            :match_name => m_name_cn
+            "name_cn" => h_name_cn,
+            "name_tw" => h_name_tw,
+            "name_en" => h_name_en,
+            "match_name" => m_name_cn
           }
         end
 
         if Team.team_name_exist?(a_name_cn) ||
             Team.team_name_exist?(a_name_tw)
           # 如果有一个能够识别，则把另外一个写入team_other_infos数据库表
-          team_others << { :name_cn => a_name_cn, :name_tc => a_name_tw }
+          team_others << { "name_cn" => a_name_cn, "name_tw" => a_name_tw }
         else
           # 如果都不能识别
           team_infos << {
-              :name_cn => a_name_cn,
-              :name_tc => a_name_tw,
-              :name_en => a_name_en,
-              :match_name => m_name_cn
+              "name_cn" => a_name_cn,
+              "name_tw" => a_name_tw,
+              "name_en" => a_name_en,
+              "match_name" => m_name_cn
             }
         end
       end
@@ -156,15 +158,17 @@ module Huuuunt
       end
     end
 
-    def display_new_match_team(match_infos, team_infos)
+    def display_new_match(match_infos)
+      $logger.warn("新的赛事名称信息：")
       match_infos.each do |match|
-        $logger.warning("新的赛事名称信息：")
-        $logger.warning("#{match['name_cn']}, #{match['name_tc']}, #{match['name_en']}")
+        $logger.warn("#{match['name_cn']}, #{match['name_tw']}, (#{match['name_en']})")
       end
+    end
 
+    def display_new_team(team_infos)
+      $logger.warn("新的球队名称信息：")
       team_infos.each do |team|
-        $logger.warning("新的球队名称信息：")
-        $logger.warning("#{team['name_cn']}, #{team['name_tc']}, #{team['name_en']}, #{team['match_name']}")
+        $logger.warn("#{team['name_cn']}, #{team['name_tw']}, #{team['name_en']}, (#{team['match_name']})")
       end
     end
 
@@ -174,14 +178,21 @@ module Huuuunt
       # 验证赛事名称是否已经在数据库中存在，获取新的赛事名称
       match_infos = get_new_match(xml)
 
+      if match_infos.size > 0
+        display_new_match(match_infos)
+        return match_infos.size
+      end
+
       # 验证球队名称是否已经在数据库中存在，获取新的球队名称
       team_infos = get_new_team(xml)
 
       # 因为赛果数据已经导入，因此所有的的赛事名称和球队名称必然已经存在
       # 新的赛事名称和新的球队名称需要全部显示出来，用于判断处理
-      display_new_match_team(match_infos, team_infos)
+      if team_infos.size > 0
+        display_new_team(team_infos)
+      end
 
-      return match_infos.size+team_infos.size
+      return team_infos.size
     end
     
     # 验证所有待插入的赔率数据是否在赛果数据中已经存在，不存在则表示数据出错

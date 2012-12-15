@@ -65,7 +65,7 @@ module Huuuunt
         else
           match_infos << {
             "name_cn" => name_cn,
-            "name_tc" => name_tw,
+            "name_tw" => name_tw,
             "name_en" => name_en,
             "match_color" => match_color
           }
@@ -106,12 +106,12 @@ module Huuuunt
         if Team.team_name_exist?(h_name_cn) ||
             Team.team_name_exist?(h_name_tw)
           # 如果有一个能够识别，则把另外一个写入team_other_infos数据库表
-          team_others << { :name_cn => h_name_cn, :name_tc => h_name_tw }
+          team_others << { :name_cn => h_name_cn, :name_tw => h_name_tw }
         else
           # 如果都不能识别
           team_infos << {
             :name_cn => h_name_cn,
-            :name_tc => h_name_tw,
+            :name_tw => h_name_tw,
             :name_en => h_name_en,
             :match_name => m_name_cn
           }
@@ -120,12 +120,12 @@ module Huuuunt
         if Team.team_name_exist?(a_name_cn) ||
             Team.team_name_exist?(a_name_tw)
           # 如果有一个能够识别，则把另外一个写入team_other_infos数据库表
-          team_others << { :name_cn => a_name_cn, :name_tc => a_name_tw }
+          team_others << { :name_cn => a_name_cn, :name_tw => a_name_tw }
         else
           # 如果都不能识别
           team_infos << {
               :name_cn => a_name_cn,
-              :name_tc => a_name_tw,
+              :name_tw => a_name_tw,
               :name_en => a_name_en,
               :match_name => m_name_cn
             }
@@ -159,12 +159,12 @@ module Huuuunt
     def display_new_match_team(match_infos, team_infos)
       match_infos.each do |match|
         $logger.warning("新的赛事名称信息：")
-        $logger.warning("#{match['name_cn']}, #{match['name_tc']}, #{match['name_en']}")
+        $logger.warning("#{match['name_cn']}, #{match['name_tw']}, #{match['name_en']}")
       end
 
       team_infos.each do |team|
         $logger.warning("新的球队名称信息：")
-        $logger.warning("#{team['name_cn']}, #{team['name_tc']}, #{team['name_en']}, #{team['match_name']}")
+        $logger.warning("#{team['name_cn']}, #{team['name_tw']}, #{team['name_en']}, #{team['match_name']}")
       end
     end
 

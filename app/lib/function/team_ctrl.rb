@@ -32,7 +32,7 @@ class TeamCtrl
       next if row[1] == "TeamName"
       teams << Team.new( :team_id => row[0],
                              :name_cn => row[1],
-                             :name_tc => row[4],
+                             :name_tw => row[4],
                              :name_en => row[5],
                              :name_jp => row[6],
                              :match_id => row[3],
@@ -90,7 +90,7 @@ class TeamCtrl
       team_sheet[index, 1] = t.name_cn
       team_sheet[index, 2] = match[t.match_id]
       team_sheet[index, 3] = t.match_id
-      team_sheet[index, 4] = t.name_tc
+      team_sheet[index, 4] = t.name_tw
       team_sheet[index, 5] = t.name_en
       team_sheet[index, 6] = t.name_jp
 
