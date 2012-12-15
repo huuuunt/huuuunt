@@ -1,0 +1,4 @@
+require './RealtimeWorkerLeague.rb'
+require './RealtimeWorkerMatch.rb'
+require './RealtimeWorkerMatchChange.rb'
+require 'resque/tasks'

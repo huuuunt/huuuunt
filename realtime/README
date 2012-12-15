@@ -1,0 +1,2 @@
+QUEUE=realtime_queue VERBOSE=1 rake resque:work resque后台队列
+ruby RealtimeCollector.rb运行收集进程
