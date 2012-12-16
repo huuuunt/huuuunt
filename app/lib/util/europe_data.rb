@@ -60,7 +60,8 @@ module Huuuunt
         # 如果都不存在，则需要手工处理，否则，由程序自动处理
 
         # 手工处理部分
-        if Match.match_name_exist?(name_cn) || Match.match_name_exist?(name_tw)
+        if Match.match_name_exist?(name_cn) ||
+            Match.match_name_exist?(name_tw)
           # name_cn和name_tw其中有一个在数据库中存在
           match_others << { "name_cn" => name_cn, "name_tw" => name_tw }
         else
@@ -103,7 +104,7 @@ module Huuuunt
           end
         end
 
-        $logger.debug("#{match_time}, #{m_name_cn}, #{m_name_tw}")
+        #$logger.debug("#{match_time}, #{m_name_cn}, #{m_name_tw}")
 
         # 判断球队的简体名称和繁体名称是否在数据库中已经存在?
         # 如果都不存在，则需要手工处理，否则，由程序自动处理
@@ -164,7 +165,7 @@ module Huuuunt
     def display_new_match(match_infos)
       $logger.warn("新的赛事名称信息：")
       match_infos.each do |match|
-        $logger.warn("#{match['name_cn']}, #{match['name_tw']}, (#{match['name_en']})")
+        $logger.warn("#{match['name_cn']}, #{match['name_tw']}, #{match['name_en']}")
       end
     end
 

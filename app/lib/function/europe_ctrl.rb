@@ -32,7 +32,7 @@ class EuropeCtrl
       size = preprocess_match_team(xml_file)
 
       # 为了便于处理新增的赛事名称或球队名称，最好针对每天的数据进行及时处理，累积多天数据再处理可能不合适
-      return if size > 0
+      #return if size > 0
     end
   end
 
@@ -63,7 +63,7 @@ class EuropeCtrl
     # 读取需要更新数据的日期，顺序下载
     start_date = Europe.latest_date("Date")
     #end_date = now_date("Date")
-    end_date = Date.parse("2011-03-08")
+    end_date = Date.parse("2011-06-08")
 
     while start_date <= end_date
       $logger.debug("Europe date : #{start_date.to_s}")

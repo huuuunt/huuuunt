@@ -61,7 +61,7 @@ module Huuuunt
         # 手工处理部分
         if Match.match_name_exist?(name_cn) ||
             Match.match_name_exist?(name_tw)
-          match_others << { :name_cn => name_cn, :name_tw => name_tw }
+          match_others << { "name_cn" => name_cn, "name_tw" => name_tw }
         else
           match_infos << {
             "name_cn" => name_cn,
@@ -87,7 +87,7 @@ module Huuuunt
       team_infos = []
       # 用于写入team_other_infos数据库表
       team_others = []
-      read_europe_xml(xml) do |match_time, match_name_arr, match_color, home_arr, away_arr, goal, direction, peilv|
+      read_asia_xml(xml) do |match_time, match_name_arr, match_color, home_arr, away_arr, goal, direction, peilv|
         m_name_cn, m_name_tw, m_name_en = match_name_arr.split(",")
         h_name_cn, h_name_tw, h_name_en = home_arr.split(",")
         a_name_cn, a_name_tw, a_name_en = away_arr.split(",")
@@ -106,28 +106,28 @@ module Huuuunt
         if Team.team_name_exist?(h_name_cn) ||
             Team.team_name_exist?(h_name_tw)
           # 如果有一个能够识别，则把另外一个写入team_other_infos数据库表
-          team_others << { :name_cn => h_name_cn, :name_tw => h_name_tw }
+          team_others << { "name_cn" => h_name_cn, "name_tw" => h_name_tw }
         else
           # 如果都不能识别
           team_infos << {
-            :name_cn => h_name_cn,
-            :name_tw => h_name_tw,
-            :name_en => h_name_en,
-            :match_name => m_name_cn
+            "name_cn" => h_name_cn,
+            "name_tw" => h_name_tw,
+            "name_en" => h_name_en,
+            "match_name" => m_name_cn
           }
         end
 
         if Team.team_name_exist?(a_name_cn) ||
             Team.team_name_exist?(a_name_tw)
           # 如果有一个能够识别，则把另外一个写入team_other_infos数据库表
-          team_others << { :name_cn => a_name_cn, :name_tw => a_name_tw }
+          team_others << { "name_cn" => a_name_cn, "name_tw" => a_name_tw }
         else
           # 如果都不能识别
           team_infos << {
-              :name_cn => a_name_cn,
-              :name_tw => a_name_tw,
-              :name_en => a_name_en,
-              :match_name => m_name_cn
+              "name_cn" => a_name_cn,
+              "name_tw" => a_name_tw,
+              "name_en" => a_name_en,
+              "match_name" => m_name_cn
             }
         end
       end
@@ -144,11 +144,11 @@ module Huuuunt
       doc = parser.parse
       doc.find("//m").each do |lang|
         match_color = lang.find_first('co').content # <co>#00A8A8</co>
-        match_name_arr = lang.find_first('le').content.split(",") # <le>友谊赛,友誼賽,INT CF</le>
+        match_name_arr = lang.find_first('le').content # <le>友谊赛,友誼賽,INT CF</le>
         match_time = lang.find_first('t').content # <t>00:30</t>
-        goal = lang.find_first('sc').content.split(",") # <sc>-1,2,2,1,1</sc>  # -12:腰斩, -14:推迟
-        home_arr = lang.find_first('ta').content.split(",") # <ta>瓦克蒂罗尔,華卡迪路,FC Wacker Innsbruck</ta>
-        away_arr = lang.find_first('tb').content.split(",") # <tb>基辅迪纳摩,基輔戴拿模,Dynamo Kyiv</tb>
+        goal = lang.find_first('sc').content # <sc>-1,2,2,1,1</sc>  # -12:腰斩, -14:推迟
+        home_arr = lang.find_first('ta').content # <ta>瓦克蒂罗尔,華卡迪路,FC Wacker Innsbruck</ta>
+        away_arr = lang.find_first('tb').content # <tb>基辅迪纳摩,基輔戴拿模,Dynamo Kyiv</tb>
         direction = lang.find_first('p').content # <p>2</p>  1: 主让客, 2: 客让主
         peilv = lang.find_first('pl').content # <pl>789207,1,0.25,1.02,0.86,True;789233,1,0.25,1.111,0.80,True;789250,1,0.25,1.23,0.65,True;,,,,,;,,,,,;,,,,,;789252,1,1,0.70,1.10,False;,,,,,;,,,,,;789244,1,1,0.74,1.16,False;,,,,,;789239,1,1,0.72,1.25,False;,,,,,</pl>
 
@@ -156,15 +156,17 @@ module Huuuunt
       end
     end
 
-    def display_new_match_team(match_infos, team_infos)
+    def display_new_match(match_infos)
+      $logger.warn("新的赛事名称信息：")
       match_infos.each do |match|
-        $logger.warning("新的赛事名称信息：")
-        $logger.warning("#{match['name_cn']}, #{match['name_tw']}, #{match['name_en']}")
+        $logger.warn("#{match['name_cn']}, #{match['name_tw']}, #{match['name_en']}")
       end
+    end
 
+    def display_new_team(team_infos)
+      $logger.warn("新的球队名称信息：")
       team_infos.each do |team|
-        $logger.warning("新的球队名称信息：")
-        $logger.warning("#{team['name_cn']}, #{team['name_tw']}, #{team['name_en']}, #{team['match_name']}")
+        $logger.warn("#{team['name_cn']}, #{team['name_tw']}, #{team['name_en']}, (#{team['match_name']})")
       end
     end
 
@@ -174,14 +176,21 @@ module Huuuunt
       # 验证赛事名称是否已经在数据库中存在，获取新的赛事名称
       match_infos = get_new_match(xml)
 
+      if match_infos.size > 0
+        display_new_match(match_infos)
+        return match_infos.size
+      end
+
       # 验证球队名称是否已经在数据库中存在，获取新的球队名称
       team_infos = get_new_team(xml)
 
       # 因为赛果数据已经导入，因此所有的的赛事名称和球队名称必然已经存在
       # 新的赛事名称和新的球队名称需要全部显示出来，用于判断处理
-      display_new_match_team(match_infos, team_infos)
+      if team_infos.size > 0
+        display_new_team(team_infos)
+      end
 
-      return match_infos.size+team_infos.size
+      return team_infos.size
     end
 
     # 验证所有待插入的赔率数据是否在赛果数据中已经存在，不存在则表示数据出错
