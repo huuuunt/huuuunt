@@ -36,7 +36,7 @@ class Match < ActiveRecord::Base
                                         }
   end
 
-  # 验证数据初始化成功代码,其中存在可能重复的数据，因此总数略少
+#  # 验证数据初始化成功代码,其中存在可能重复的数据，因此总数略少
 #  @@match_name_map.each do |key, value|
 #    puts "#{key}, #{value['id']}, #{value['import']}"
 #  end
@@ -62,11 +62,11 @@ class Match < ActiveRecord::Base
     end
 
     def update_match_name_map(match_name, match_id)
-      @@match_name_map[match_name] = { "id" => match_id, "import" => 0 }
+      @@match_name_map[match_name] = { "id" => match_id, "import" => FALSE }
     end
 
     def update_match_id_map(match_name, match_id)
-      @@match_id_map[match_id] = { "name" => match_name, "import" => 0 }
+      @@match_id_map[match_id] = { "name" => match_name, "import" => FALSE }
     end
 
     # 判断赛事名称是否已经在数据库中存在，从@@match_name_map中判断
@@ -122,12 +122,12 @@ class Match < ActiveRecord::Base
 
         match_infos << Match.new(:match_id => id+index+1,
                                :name_cn => name,
-                               :name_tw => '',
-                               :name_en => '',
-                               :name_jp => '',
+                               :name_tw => nil,
+                               :name_en => nil,
+                               :name_jp => nil,
                                :match_color => '#000000',
-                               :need_import => 0,
-                               :country_id => 0,
+                               :need_import => FALSE,
+                               :country_id => nil,
                                :bet007_match_id => 0,
                                :phases => 0,
                                :season_type => 0)
@@ -174,6 +174,8 @@ class Match < ActiveRecord::Base
             eval src
           end
           update_match_name_map(name_tw, match_id)
+          # 注意这里就可以next了，否则下面这个match_name_exist?(name_tw)会受影响，造成数据错误
+          next
         end
 
         if match_name_exist?(name_tw)

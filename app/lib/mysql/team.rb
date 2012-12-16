@@ -70,9 +70,9 @@ class Team < ActiveRecord::Base
 
         team_infos << Team.new(:team_id => id+index+1,
                                    :name_cn => item['team_name'],
-                                   :name_tw => '',
-                                   :name_en => '',
-                                   :name_jp => '',
+                                   :name_tw => nil,
+                                   :name_en => nil,
+                                   :name_jp => nil,
                                    :match_id => item['match_id']
                      )
         update_team_name_map(item['team_name'], id+index+1)
@@ -117,6 +117,8 @@ class Team < ActiveRecord::Base
             eval src
           end
           update_team_name_map(name_tw, team_id)
+          # 注意这里就可以next了，否则下面这个team_name_exist?(name_tw)会受影响，造成数据错误
+          next
         end
 
         if team_name_exist?(name_tw)

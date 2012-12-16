@@ -60,10 +60,11 @@ module Huuuunt
         # 如果都不存在，则需要手工处理，否则，由程序自动处理
 
         # 手工处理部分
-        if Match.match_name_exist?(name_cn) ||
-            Match.match_name_exist?(name_tw)
+        if Match.match_name_exist?(name_cn) || Match.match_name_exist?(name_tw)
+          # name_cn和name_tw其中有一个在数据库中存在
           match_others << { "name_cn" => name_cn, "name_tw" => name_tw }
         else
+          # name_cn和name_tw都不在数据库中存在
           match_infos << {
             "name_cn" => name_cn,
             "name_tw" => name_tw,
@@ -93,7 +94,7 @@ module Huuuunt
         h_name_cn, h_name_tw, h_name_en = home_arr.split(",")
         a_name_cn, a_name_tw, a_name_en = away_arr.split(",")
 
-        #$logger.debug("#{h_name_cn}, #{h_name_tw}, #{h_name_en}, #{a_name_cn}, #{a_name_tw}, #{a_name_en}")
+        #$logger.debug("#{m_name_cn} : #{h_name_cn}, #{h_name_tw}, #{h_name_en}, #{a_name_cn}, #{a_name_tw}, #{a_name_en}")
 
         # 判断该赛事是否要纳入统计(赛事名称无法识别的情况同样返回FALSE)
         unless Match.match_need_import?(m_name_cn)
@@ -101,6 +102,8 @@ module Huuuunt
             next
           end
         end
+
+        $logger.debug("#{match_time}, #{m_name_cn}, #{m_name_tw}")
 
         # 判断球队的简体名称和繁体名称是否在数据库中已经存在?
         # 如果都不存在，则需要手工处理，否则，由程序自动处理

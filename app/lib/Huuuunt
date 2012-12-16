@@ -55,7 +55,7 @@ logfile = Log4r::FileOutputter.new(
   {
     :filename => File.expand_path("./log/huuuunt.log", File.dirname(__FILE__)),
     :formatter => formatter,
-    :trunc => false   # 下次运行是否先清空原先的日志文件内容
+    :trunc => TRUE   # 下次运行是否先清空原先的日志文件内容
   })
 $logger.outputters = logfile
 

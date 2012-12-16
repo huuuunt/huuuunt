@@ -63,7 +63,7 @@ class EuropeCtrl
     # 读取需要更新数据的日期，顺序下载
     start_date = Europe.latest_date("Date")
     #end_date = now_date("Date")
-    end_date = Date.parse("2012-09-10")
+    end_date = Date.parse("2011-03-08")
 
     while start_date <= end_date
       $logger.debug("Europe date : #{start_date.to_s}")
