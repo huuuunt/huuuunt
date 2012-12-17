@@ -15,7 +15,7 @@ class Match < ActiveRecord::Base
     @@match_name_map[match.name_cn] = { "id" => match.match_id.to_i, "import" => match.need_import }
     1.upto(10) do |x|
       src = <<-END_SRC
-        @@match_name_map[match.name#{x}] = { "id" => match.match_id, "import" => match.need_import } if match.name#{x}
+        @@match_name_map[match.name#{x}] = { "id" => match.match_id, "import" => match.need_import } if match.name#{x} && match.name#{x}.size>0
       END_SRC
       eval src
     end
@@ -37,6 +37,7 @@ class Match < ActiveRecord::Base
   end
 
 #  # 验证数据初始化成功代码,其中存在可能重复的数据，因此总数略少
+#  puts @@match_name_map.size
 #  @@match_name_map.each do |key, value|
 #    puts "#{key}, #{value['id']}, #{value['import']}"
 #  end
@@ -165,7 +166,8 @@ class Match < ActiveRecord::Base
           match = where("match_id = #{match_id}").first
           1.upto(10) do |x|
             src = <<-END_SRC
-              unless match.name#{x}
+              if match.name#{x} && match.name#{x}.size>0
+              else
                 match.name#{x} = name_tw
                 match.save
                 break
@@ -184,7 +186,8 @@ class Match < ActiveRecord::Base
           match = where("match_id = #{match_id}").first
           1.upto(10) do |x|
             src = <<-END_SRC
-              unless match.name#{x}
+              if match.name#{x} && match.name#{x}.size>0
+              else
                 match.name#{x} = name_cn
                 match.save
                 break

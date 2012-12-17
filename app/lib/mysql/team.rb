@@ -13,7 +13,7 @@ class Team < ActiveRecord::Base
     @@team_name_map[team.name_cn] = { "id" => team.team_id }
     1.upto(10) do |x|
       src = <<-END_SRC
-        @@team_name_map[team.name#{x}] = { "id" => team.team_id } if team.name#{x}
+        @@team_name_map[team.name#{x}] = { "id" => team.team_id } if team.name#{x} && team.name#{x}.size>0
       END_SRC
       eval src
     end
@@ -23,7 +23,8 @@ class Team < ActiveRecord::Base
 #    @@team_name_map[team.name] = { "id" => team.team_id }
 #  end
 
-  # 验证数据初始化成功代码
+#  # 验证数据初始化成功代码
+#  puts @@team_name_map.size
 #  @@team_name_map.each do |key, value|
 #    puts "#{key}, #{value['id']}, #{value['import']}"
 #  end
@@ -108,7 +109,8 @@ class Team < ActiveRecord::Base
           team = where("team_id = #{team_id}").first
           1.upto(10) do |x|
             src = <<-END_SRC
-              unless team.name#{x}
+              if team.name#{x} && team.name#{x}.size>0
+              else
                 team.name#{x} = name_tw
                 team.save
                 break
@@ -127,7 +129,8 @@ class Team < ActiveRecord::Base
           team = where("team_id = #{team_id}").first
           1.upto(10) do |x|
             src = <<-END_SRC
-              unless team.name#{x}
+              if team.name#{x} && team.name#{x}.size>0
+              else
                 team.name#{x} = name_cn
                 team.save
                 break

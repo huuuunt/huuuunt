@@ -35,7 +35,7 @@ class ResultCtrl
       size = preprocess_match_team(csv_file)
 
       # 为了便于处理新增的赛事名称或球队名称，最好针对每天的数据进行及时处理，累积多天数据再处理可能不合适
-      exit if size > 0
+      #exit if size > 0
     end
   end
 
@@ -55,9 +55,9 @@ class ResultCtrl
   def self.date_loop
     # 读取需要更新数据的日期，顺序下载
     start_date = Result.lastest_date("Date")
-   end_date = now_date("Date")
-#    start_date = Date.parse("2012-09-09")
-    end_date = Date.parse("2011-12-30")
+    end_date = now_date("Date")
+
+    end_date = Date.parse("2011-06-30")
 
     while start_date <= end_date
       $logger.debug("Result date : #{start_date.to_s}")

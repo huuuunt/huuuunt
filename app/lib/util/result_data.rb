@@ -161,8 +161,7 @@ module Huuuunt
       team_infos = get_new_team(csv)
       Team.insert_new_team_name(team_infos)
 
-      #return team_infos.size
-      0
+      return team_infos.size
     end
 
     # 读取csv文件中的赛事结果数据，导入数据库

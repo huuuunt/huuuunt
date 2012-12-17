@@ -5,7 +5,7 @@ require 'activerecord-import'
 
 SQLLOGPATH = File.expand_path("../../lib/log/mysql.log", File.dirname(__FILE__))
 
-ActiveRecord::Base.logger = Logger.new(SQLLOGPATH, 100, 128*1024*1024)
+ActiveRecord::Base.logger = Logger.new(SQLLOGPATH, 100, 32*1024*1024)
 
 #####################
 # MySQL数据库连接配置 #
