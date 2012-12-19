@@ -36,3 +36,15 @@ class TeamExportCmd < CmdParse::Command
     TeamCtrl.export(args)
   end
 end
+
+class TeamCheckCmd < CmdParse::Command
+  def initialize
+    super('check', false)
+    self.short_desc = "检查球队名称数据库中是否存在重复的数据"
+    self.description = "检查球队名称数据库中是否存在重复的数据"
+  end
+
+  def execute(args)
+    TeamCtrl.check_duplicate_name(args)
+  end
+end

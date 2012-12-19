@@ -10,10 +10,19 @@ class Team < ActiveRecord::Base
   @@team_id_map = {}
 
   Team.all.each do |team|
+    if @@team_name_map.include?(team.name_cn)
+      #puts "(1) #{team.name_cn},#{team.team_id} has exist!"
+    end
     @@team_name_map[team.name_cn] = { "id" => team.team_id }
     1.upto(10) do |x|
       src = <<-END_SRC
-        @@team_name_map[team.name#{x}] = { "id" => team.team_id } if team.name#{x} && team.name#{x}.size>0
+        team_name = team.name#{x}
+        if team_name && team_name.size>0
+          if @@team_name_map.include?(team_name)
+            #puts "(2) " + team_name + "(" + team.team_id.to_s + ") has exist!"
+          end
+          @@team_name_map[team.name#{x}] = { "id" => team.team_id }
+        end
       END_SRC
       eval src
     end
@@ -34,6 +43,36 @@ class Team < ActiveRecord::Base
 #  end
 
   class << self
+    def check_duplicate_name
+      team_name_check = {}
+      Team.all.each do |team|
+        if team_name_check.include?(team.name_cn)
+          puts "(1) #{team.name_cn},#{team.team_id} has exist!"
+          #team.name_cn = "TEMP#{team.team_id}"
+          #team.save
+
+          # 1.处理name1～10的数据，迁移到正确的数据记录中去
+          # 2.处理赛果数据
+          # 3.处理赔率数据
+        end
+        team_name_check[team.name_cn] = { "id" => team.team_id }
+        1.upto(10) do |x|
+          src = <<-END_SRC
+            team_name = team.name#{x}
+            if team_name && team_name.size>0
+              if team_name_check.include?(team_name)
+                puts "(2) " + team_name + "(" + team.team_id.to_s + ") has exist!"
+                team.name#{x} = nil
+                team.save
+              else
+                team_name_check[team.name#{x}] = { "id" => team.team_id }
+              end
+            end
+          END_SRC
+          eval src
+        end
+      end
+    end
 
     def update_team_name_map(team_name, team_id)
       @@team_name_map[team_name] = { "id" => team_id }

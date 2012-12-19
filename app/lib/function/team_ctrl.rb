@@ -117,4 +117,8 @@ class TeamCtrl
     # 写入match.xls文件
     book.write(TeamInfoFile)
   end
+
+  def self.check_duplicate_name(args)
+    Team.check_duplicate_name
+  end
 end

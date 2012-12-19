@@ -74,8 +74,8 @@ cmd.add_command(CmdParse::VersionCommand.new)
 
 # 所有命令列表
 commands = {
-  "MatchCmd" => ["MatchImportCmd", "MatchExportCmd"],
-  "TeamCmd" => ["TeamImportCmd", "TeamExportCmd"],
+  "MatchCmd" => ["MatchImportCmd", "MatchExportCmd", "MatchCheckCmd"],
+  "TeamCmd" => ["TeamImportCmd", "TeamExportCmd", "TeamCheckCmd"],
   "ResultCmd" => ["ResultDownloadCmd", "ResultPreprocessCmd", "ResultUpdateCmd"],
   "EuropeCmd" => ["EuropeDownloadCmd", "EuropePreprocessCmd", "EuropeCheckResultCmd", "EuropeUpdateCmd"],
   "AsiaCmd" => ["AsiaDownloadCmd", "AsiaPreprocessCmd", "AsiaCheckResultCmd", "AsiaUpdateCmd"],

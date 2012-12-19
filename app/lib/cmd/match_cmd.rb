@@ -36,3 +36,15 @@ class MatchExportCmd < CmdParse::Command
     MatchCtrl.export(args)
   end
 end
+
+class MatchCheckCmd < CmdParse::Command
+  def initialize
+    super('check', false)
+    self.short_desc = "检查赛事名称数据库中是否存在重复的数据"
+    self.description = "检查赛事名称数据库中是否存在重复的数据"
+  end
+
+  def execute(args)
+    MatchCtrl.check_duplicate_name(args)
+  end
+end

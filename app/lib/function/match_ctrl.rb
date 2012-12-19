@@ -163,4 +163,8 @@ class MatchCtrl
     # 写入match.xls文件
     book.write(MatchInfoFile)
   end
+
+  def self.check_duplicate_name(args)
+    Match.check_duplicate_name
+  end
 end
