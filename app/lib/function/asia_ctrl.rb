@@ -47,7 +47,7 @@ class AsiaCtrl
     end
   end
 
-  def self.update(args)
+  def self.import(args)
     date_loop do |date|
       xml_file = data_file_path(date, ASIAPATH, 'xml')
       return unless File.exist?(xml_file)

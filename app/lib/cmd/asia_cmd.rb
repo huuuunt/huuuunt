@@ -57,7 +57,7 @@ class AsiaImportCmd < CmdParse::Command
   end
 
   def execute(args)
-    AsiaCtrl.update(args)
+    AsiaCtrl.import(args)
   end
 end
 

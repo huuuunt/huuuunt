@@ -57,7 +57,7 @@ class EuropeImportCmd < CmdParse::Command
   end
 
   def execute(args)
-    EuropeCtrl.update(args)
+    EuropeCtrl.import(args)
   end
 end
 

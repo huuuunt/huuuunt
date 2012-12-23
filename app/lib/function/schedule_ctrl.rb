@@ -34,7 +34,7 @@ class ScheduleCtrl
     preprocess_team(season, match_set, SCHEDULEPATH)
   end
 
-  def self.update(args)
+  def self.import(args)
     date_loop do |date|
       csv_file = data_file_path(date, RESULTPATH, 'csv')
       return unless File.exist?(csv_file)
