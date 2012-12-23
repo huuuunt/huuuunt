@@ -49,9 +49,9 @@ class AsiaCheckResultCmd < CmdParse::Command
   end
 end
 
-class AsiaUpdateCmd < CmdParse::Command
+class AsiaImportCmd < CmdParse::Command
   def initialize
-    super('update', false)
+    super('import', false)
     self.short_desc = "将预处理好的亚洲赔率数据导入数据库"
     self.description = "将预处理好的亚洲赔率数据导入数据库"
   end

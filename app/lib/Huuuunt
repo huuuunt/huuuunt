@@ -76,10 +76,10 @@ cmd.add_command(CmdParse::VersionCommand.new)
 commands = {
   "MatchCmd" => ["MatchImportCmd", "MatchExportCmd", "MatchCheckCmd"],
   "TeamCmd" => ["TeamImportCmd", "TeamExportCmd", "TeamCheckCmd"],
-  "ResultCmd" => ["ResultDownloadCmd", "ResultPreprocessCmd", "ResultUpdateCmd"],
-  "EuropeCmd" => ["EuropeDownloadCmd", "EuropePreprocessCmd", "EuropeCheckResultCmd", "EuropeUpdateCmd"],
-  "AsiaCmd" => ["AsiaDownloadCmd", "AsiaPreprocessCmd", "AsiaCheckResultCmd", "AsiaUpdateCmd"],
-  "ScheduleCmd" => ["ScheduleDownloadCmd", "SchedulePreprocessCmd", "ScheduleUpdateCmd"]
+  "ResultCmd" => ["ResultDownloadCmd", "ResultPreprocessCmd", "ResultImportCmd"],
+  "EuropeCmd" => ["EuropeDownloadCmd", "EuropePreprocessCmd", "EuropeCheckResultCmd", "EuropeImportCmd"],
+  "AsiaCmd" => ["AsiaDownloadCmd", "AsiaPreprocessCmd", "AsiaCheckResultCmd", "AsiaImportCmd"],
+  "ScheduleCmd" => ["ScheduleDownloadCmd", "SchedulePreprocessCmd", "ScheduleImportCmd"]
   #"" => ["", "", ""]
 }
 

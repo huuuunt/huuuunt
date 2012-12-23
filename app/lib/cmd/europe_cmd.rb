@@ -49,9 +49,9 @@ class EuropeCheckResultCmd < CmdParse::Command
   end
 end
 
-class EuropeUpdateCmd < CmdParse::Command
+class EuropeImportCmd < CmdParse::Command
   def initialize
-    super('update', false)
+    super('import', false)
     self.short_desc = "将预处理好的欧洲赔率数据导入数据库"
     self.description = "将预处理好的欧洲赔率数据导入数据库"
   end

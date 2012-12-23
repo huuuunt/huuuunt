@@ -37,9 +37,9 @@ class SchedulePreprocessCmd < CmdParse::Command
   end
 end
 
-class ScheduleUpdateCmd < CmdParse::Command
+class ScheduleImportCmd < CmdParse::Command
   def initialize
-    super('update', false)
+    super('import', false)
     self.short_desc = "将预处理好的赛程数据导入数据库"
     self.description = "将预处理好的赛程数据导入数据库"
   end
