@@ -37,6 +37,11 @@ module Huuuunt
       "#{date.split('-').join}#{full_matchno(matchno)}#{full_teamno(team1no)}#{full_teamno(team2no)}"
     end
 
+    def create_matchinfono2(datetime, matchno, team1no, team2no)
+      date = datetime.split[0]
+      "#{date.split('-').join}#{full_matchno(matchno)}#{full_teamno(team1no)}#{full_teamno(team2no)}"
+    end
+
     def gbk2utf8(gbk)
       return nil if gbk==nil || gbk.length==0
       return Iconv.iconv("UTF-8", "GBK", gbk.strip)[0]

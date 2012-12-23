@@ -35,8 +35,8 @@ tables.each do |table|
                    "table_name" => table
                  }
 end
-# CmsDataMatchInfo - CmsData = MatchInfo
-# 将MatchInfo转换成继承ActiveRecord::Base的类，并对应数据库表“cms_data_match_infos”
+# CmsDataMatches - CmsData = Match
+# 将Match转换成继承ActiveRecord::Base的类，并对应数据库表“cms_data_matches”
 # 其他数据库表对应的ActiveRecord::Base类以此类推
 dest_tables.each do |names|
   class_name = names['class_name'].sub(/CmsData/, '')

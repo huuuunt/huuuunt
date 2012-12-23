@@ -1,6 +1,9 @@
 
 require 'mysql/driver'
 require 'mysql/match'
+require 'mysql/result'
+require 'mysql/europe'
+require 'mysql/asia'
 
 class Team < ActiveRecord::Base
 
@@ -9,9 +12,10 @@ class Team < ActiveRecord::Base
   @@team_name_map = {}
   @@team_id_map = {}
 
+  # 生成缓存数据，同时验证是否存在重复的球队名称
   Team.all.each do |team|
     if @@team_name_map.include?(team.name_cn)
-      #puts "(1) #{team.name_cn},#{team.team_id} has exist!"
+      puts "(1) #{team.name_cn},#{team.team_id} has exist!"
     end
     @@team_name_map[team.name_cn] = { "id" => team.team_id }
     1.upto(10) do |x|
@@ -19,7 +23,7 @@ class Team < ActiveRecord::Base
         team_name = team.name#{x}
         if team_name && team_name.size>0
           if @@team_name_map.include?(team_name)
-            #puts "(2) " + team_name + "(" + team.team_id.to_s + ") has exist!"
+            puts "(2) " + team_name + "(" + team.team_id.to_s + ") has exist!"
           end
           @@team_name_map[team.name#{x}] = { "id" => team.team_id }
         end
@@ -43,36 +47,7 @@ class Team < ActiveRecord::Base
 #  end
 
   class << self
-    def check_duplicate_name
-      team_name_check = {}
-      Team.all.each do |team|
-        if team_name_check.include?(team.name_cn)
-          puts "(1) #{team.name_cn},#{team.team_id} has exist!"
-          #team.name_cn = "TEMP#{team.team_id}"
-          #team.save
 
-          # 1.处理name1～10的数据，迁移到正确的数据记录中去
-          # 2.处理赛果数据
-          # 3.处理赔率数据
-        end
-        team_name_check[team.name_cn] = { "id" => team.team_id }
-        1.upto(10) do |x|
-          src = <<-END_SRC
-            team_name = team.name#{x}
-            if team_name && team_name.size>0
-              if team_name_check.include?(team_name)
-                puts "(2) " + team_name + "(" + team.team_id.to_s + ") has exist!"
-                team.name#{x} = nil
-                team.save
-              else
-                team_name_check[team.name#{x}] = { "id" => team.team_id }
-              end
-            end
-          END_SRC
-          eval src
-        end
-      end
-    end
 
     def update_team_name_map(team_name, team_id)
       @@team_name_map[team_name] = { "id" => team_id }
@@ -128,9 +103,8 @@ class Team < ActiveRecord::Base
     # 选择性插入球队名称数据
     # 1、如果简体名称和繁体名称在数据库中都不存在，则需要展示出来
     # 2、如果简体名称和繁体名称在数据库中都存在，则无需处理
-    # 3、如果简体名称和繁体名称只有一个在数据库中存在，则将另一个插入到team_other_infos数据库表中
+    # 3、如果简体名称和繁体名称只有一个在数据库中存在，则将另一个插入到teams数据库表中
     def select_insert_team_name(team_name_arr)
-      team_others = []
       team_name_arr.each do |item|
         name_cn = item["name_cn"]
         name_tw = item["name_tw"]
@@ -181,6 +155,86 @@ class Team < ActiveRecord::Base
         end
       end
     end
-  end
+
+    # 检查是否存在重复的球队名称
+    # 如果存在重复的球队名称，则修复，修复存在两种情况。
+    # 情况一：name_cn数据重复
+    # 情况二：name1～10数据重复
+    def check_duplicate_name
+      team_name_check = {}
+      Team.all.each do |team_obj|
+        if team_name_check.include?(team_obj.name_cn)
+          puts "(1) #{team_obj.name_cn},#{team_obj.team_id} has exist!"
+
+          # 此时已确定team.name_cn已经存在，则可以直接获取已存在的球队的ID数据
+          dest_team_id = team_name_check[team_obj.name_cn]['id'].to_i
+          dest_team_obj = Team.where("team_id=#{dest_team_id}").first
+
+          # 将待删除球队记录的繁体名称和英文名称，复制到已有球队记录中
+          dest_team_obj.name_tw = team_obj.name_tw unless dest_team_obj.name_tw
+          dest_team_obj.name_en = team_obj.name_en unless dest_team_obj.name_en
+          dest_team_obj.save
+
+          # 将重复的数据修改成TEMP%d格式
+          team_obj.name_cn = "TEMP#{team_obj.team_id}"
+          team_obj.name_tw = nil
+          team_obj.name_en = nil
+          team_obj.save
+
+          # 1.处理name1～10的数据，迁移到正确的数据记录中去
+          tmp_teams = []
+          1.upto(10) do |x|
+            src = <<-END_SRC
+              team_name = team_obj.name#{x}
+              if team_name && team_name.size>0
+                tmp_teams << team_name
+                team_obj.name#{x} = nil
+                team_obj.save
+              end
+            END_SRC
+            eval src
+          end
+          tmp_teams.each do |t_name|
+            1.upto(10) do |x|
+              src = <<-END_SRC
+                if dest_team_obj.name#{x} && dest_team_obj.name#{x}.size>0
+                else
+                  dest_team_obj.name#{x} = t_name
+                  dest_team_obj.save
+                  break
+                end
+              END_SRC
+              eval src
+            end
+          end
+
+          # 2.处理赛果数据
+          Result.update_team_id(team_obj.team_id.to_i, dest_team_obj.team_id.to_i)
+
+          # 3.处理赔率数据
+          Europe.update_team_id(team_obj.team_id.to_i, dest_team_obj.team_id.to_i)
+          Asia.update_team_id(team_obj.team_id.to_i, dest_team_obj.team_id.to_i)
+        end
+
+        team_name_check[team_obj.name_cn] = { "id" => team_obj.team_id }
+        1.upto(10) do |x|
+          src = <<-END_SRC
+            team_name = team_obj.name#{x}
+            if team_name && team_name.size>0
+              if team_name_check.include?(team_name)
+                puts "(2) " + team_name + "(" + team_obj.team_id.to_s + ") has exist!"
+                team_obj.name#{x} = nil
+                team_obj.save
+              else
+                team_name_check[team_obj.name#{x}] = { "id" => team_obj.team_id }
+              end
+            end
+          END_SRC
+          eval src
+        end
+      end
+    end
+    
+  end # class << self
 end
 

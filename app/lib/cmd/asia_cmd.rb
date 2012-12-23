@@ -45,7 +45,7 @@ class AsiaCheckResultCmd < CmdParse::Command
   end
 
   def execute(args)
-    AsiaCtrl.resultcheck(args)
+    AsiaCtrl.check_in_result(args)
   end
 end
 

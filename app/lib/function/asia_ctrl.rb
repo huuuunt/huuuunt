@@ -36,7 +36,8 @@ class AsiaCtrl
     end
   end
 
-  def self.resultcheck(args)
+  # 检查赔率数据中的赛事是否在赛果中存在
+  def self.check_in_result(args)
     date_loop do |date|
       xml_file = data_file_path(date, ASIAPATH, 'xml')
       return unless File.exist?(xml_file)

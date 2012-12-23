@@ -45,7 +45,7 @@ class EuropeCheckResultCmd < CmdParse::Command
   end
 
   def execute(args)
-    EuropeCtrl.resultcheck(args)
+    EuropeCtrl.check_in_result(args)
   end
 end
 

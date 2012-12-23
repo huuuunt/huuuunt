@@ -1,10 +1,12 @@
 
 require 'mysql/driver'
 require 'util/date_tool'
+require 'util/common'
 
 class Asia
 
   include Huuuunt::DateTool
+  include Huuuunt::Common
 
   cattr_accessor :companies
   # 亚洲赔率公司
@@ -29,5 +31,50 @@ class Asia
 
     return latest_date_format(latest_datetime, format)
   end
+
+  # 替换team_id
+  def self.update_team_id(s_id, d_id)
+    update_home_team_id(s_id, d_id)
+    update_away_team_id(s_id, d_id)
+  end
+
+  def self.update_home_team_id(s_id, d_id)
+    @@companies.each do |company|
+      company_class_name = company.singularize.titleize.split.join
+      company_obj = []
+      src = <<-END_SRC
+        company_obj = #{company_class_name}.where("team1no = #{s_id}")
+      END_SRC
+      eval src
+      
+      company_obj.each do |r|
+        datetime = r.matchdt.strftime('%Y-%m-%d %H:%M:%S')
+        new_matchinfono = create_matchinfono2(datetime, r.matchno, d_id, r.team2no)
+        r.matchinfono = new_matchinfono
+        r.team1no = d_id
+        r.save
+      end
+    end
+  end
+
+  def self.update_away_team_id(s_id, d_id)
+    @@companies.each do |company|
+      company_class_name = company.singularize.titleize.split.join
+      company_obj = []
+      src = <<-END_SRC
+        company_obj = #{company_class_name}.where("team2no = #{s_id}")
+      END_SRC
+      eval src
+
+      company_obj.each do |r|
+        datetime = r.matchdt.strftime('%Y-%m-%d %H:%M:%S')
+        new_matchinfono = create_matchinfono2(datetime, r.matchno, r.team1no, d_id)
+        r.matchinfono = new_matchinfono
+        r.team2no = d_id
+        r.save
+      end
+    end    
+  end
+
 end
 

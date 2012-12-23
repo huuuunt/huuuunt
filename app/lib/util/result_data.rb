@@ -168,71 +168,74 @@ module Huuuunt
     def insert_new_result(csv_file)
       results = []
       File.open(csv_file, "r") do |f|
-        match = f.readline
-        details = match.split(';')
-        
-        match_name = gbk2utf8(details[0])
+        until f.eof?
+          match = f.readline
+          details = match.split(';')
 
-        next unless Match.match_need_import?(match_name)
+          match_name = gbk2utf8(details[0])
 
-        team1_name = gbk2utf8(details[3])
-        team2_name = gbk2utf8(details[5])
-        match_datetime = details[1]      # 08-06-21 08:00
-        match_status = details[2]        # 完
-        match_goal =  details[4]         # 1-1
-        match_half_goal = details[6].strip     # 0-0  # strip删除换行符\n
+          next unless Match.match_need_import?(match_name)
 
-        # 获取赛事ID、主客队球队ID
-        match_id = Match.get_match_id_by_name(match_name)
-        team1_id = Team.get_team_id_by_name(team1_name)
-        team2_id = Team.get_team_id_by_name(team2_name)
-        # 计算半全场进球情况
-        goal1,goal2 = match_goal.split('-')
-        h_goal1,h_goal2 = match_half_goal.split('-')
-        goal1 = gooooal(goal1)
-        goal2 = gooooal(goal2)
-        h_goal1 = gooooal(h_goal1)
-        h_goal2 = gooooal(h_goal2)
-        # 比赛状态：1:完, 2:推迟, 3:取消, 4:腰斩, 5:待定
-        match_status = gbk2utf8(match_status)
-        status =  case match_status
-                  when "完" then 1
-                  when "推迟" then 2
-                  when "取消"then 3
-                  when "腰斩"then 4
-                  when "待定" then 5
-                  else 6
-                  end
+          team1_name = gbk2utf8(details[3])
+          team2_name = gbk2utf8(details[5])
+          match_datetime = details[1]      # 08-06-21 08:00
+          match_status = details[2]        # 完
+          match_goal =  details[4]         # 1-1
+          match_half_goal = details[6].strip     # 0-0  # strip删除换行符\n
 
-        # 计算比赛日期
-        match_dt = "20" + match_datetime
-        match_date = (match_dt.split)[0]
+          # 获取赛事ID、主客队球队ID
+          match_id = Match.get_match_id_by_name(match_name)
+          team1_id = Team.get_team_id_by_name(team1_name)
+          team2_id = Team.get_team_id_by_name(team2_name)
+          # 计算半全场进球情况
+          goal1,goal2 = match_goal.split('-')
+          h_goal1,h_goal2 = match_half_goal.split('-')
+          goal1 = gooooal(goal1)
+          goal2 = gooooal(goal2)
+          h_goal1 = gooooal(h_goal1)
+          h_goal2 = gooooal(h_goal2)
+          # 比赛状态：1:完, 2:推迟, 3:取消, 4:腰斩, 5:待定
+          match_status = gbk2utf8(match_status)
+          status =  case match_status
+                    when "完" then 1
+                    when "推迟" then 2
+                    when "取消"then 3
+                    when "腰斩"then 4
+                    when "待定" then 5
+                    else 6
+                    end
 
-        matchinfono = create_matchinfono(match_date, match_id, team1_id, team2_id)
+          # 计算比赛日期
+          match_dt = "20" + match_datetime
+          match_date = (match_dt.split)[0]
 
-        #puts "#{matchinfono},#{match_date},#{match_id},#{team1_id},#{team2_id},#{h_goal1},#{h_goal2},#{goal1},#{goal2},#{status}"
+          matchinfono = create_matchinfono(match_date, match_id, team1_id, team2_id)
 
-        # 判断该比赛结果是否已经存在数据库中，如果不存在，则保存到待插入的队列中
-        unless Result.match_exist?(matchinfono)
-          results << Result.new( :matchinfono => matchinfono,
-                                 :matchdt => match_dt,
-                                 :matchno=> match_id,
-                                 :team1no => team1_id,
-                                 :team2no => team2_id,
-                                 :goal1 => goal1,
-                                 :goal2 => goal2,
-                                 :halfgoal1 => h_goal1,
-                                 :halfgoal2 => h_goal2,
-                                 :status => status
-                     )
-        else
-          $logger.warn("#{matchinfono} exist!!! --- #{match_dt}, #{Match.match_id_map[match_id]['name']}, #{Team.team_id_map[team1_id]['team_name']}, #{Team.team_id_map[team2_id]['team_name']}")
-          return
-        end
-      end
+          #puts "#{matchinfono},#{match_date},#{match_id},#{team1_id},#{team2_id},#{h_goal1},#{h_goal2},#{goal1},#{goal2},#{status}"
 
-      Result.import(results)      
-    end
+          # 判断该比赛结果是否已经存在数据库中，如果不存在，则保存到待插入的队列中
+          unless Result.match_exist?(matchinfono)
+            results << Result.new( :matchinfono => matchinfono,
+                                   :matchdt => match_dt,
+                                   :matchno=> match_id,
+                                   :team1no => team1_id,
+                                   :team2no => team2_id,
+                                   :goal1 => goal1,
+                                   :goal2 => goal2,
+                                   :halfgoal1 => h_goal1,
+                                   :halfgoal2 => h_goal2,
+                                   :status => status
+                       )
+          else
+            $logger.warn("#{matchinfono} exist!!! --- #{match_dt}, #{Match.match_id_map[match_id]['name']}, #{Team.team_id_map[team1_id]['team_name']}, #{Team.team_id_map[team2_id]['team_name']}")
+            return
+          end
+        end # until f.eof?
+      end # File.open
+
+      Result.import(results)
+    end # insert_new_result
+    
   end
 end
 

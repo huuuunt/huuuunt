@@ -11,9 +11,10 @@ class Match < ActiveRecord::Base
   @@match_name_map = {}
   @@match_id_map = {}
 
+  # 生成缓存数据，同时验证是否存在重复的赛事名称
   Match.all.each do |match|
     if @@match_name_map.include?(match.name_cn)
-      #puts "(1) #{match.name_cn},#{match.match_id} has exist!"
+      puts "(1) #{match.name_cn},#{match.match_id} has exist!"
     end
     @@match_name_map[match.name_cn] = { "id" => match.match_id.to_i, "import" => match.need_import }
     1.upto(10) do |x|
@@ -21,7 +22,7 @@ class Match < ActiveRecord::Base
         match_name = match.name#{x}
         if match_name && match_name.size>0
           if @@match_name_map.include?(match_name)
-            #puts "(2) " + match_name + "(" + match.match_id.to_s + ") has exist!"
+            puts "(2) " + match_name + "(" + match.match_id.to_s + ") has exist!"
           end
           @@match_name_map[match.name#{x}] = { "id" => match.match_id, "import" => match.need_import } 
         end
@@ -71,32 +72,7 @@ class Match < ActiveRecord::Base
       find_by_sql("select match_id, name_cn from #{$tab['match']}")
     end
 
-    def check_duplicate_name
-      match_name_check = {}
-      Match.all.each do |match|
-        if match_name_check.include?(match.name_cn)
-          puts "(1) #{match.name_cn},#{match.match_id} has exist!"
-          #match.name_cn = "TEMP#{match.match_id}"
-          #match.save
-        end
-        match_name_check[match.name_cn] = { "id" => match.match_id.to_i, "import" => match.need_import }
-        1.upto(10) do |x|
-          src = <<-END_SRC
-            match_name = match.name#{x}
-            if match_name && match_name.size>0
-              if match_name_check.include?(match_name)
-                puts "(2) " + match_name + "(" + match.match_id.to_s + ") has exist!"
-                match.name#{x} = nil
-                match.save
-              else
-                match_name_check[match.name#{x}] = { "id" => match.match_id, "import" => match.need_import }
-              end
-            end
-          END_SRC
-          eval src
-        end
-      end
-    end
+
 
     def update_match_name_map(match_name, match_id)
       @@match_name_map[match_name] = { "id" => match_id, "import" => FALSE }
@@ -235,6 +211,35 @@ class Match < ActiveRecord::Base
         end
       end
     end
+
+    # 检查是否存在重复的赛事名称
+    def check_duplicate_name
+      match_name_check = {}
+      Match.all.each do |match|
+        if match_name_check.include?(match.name_cn)
+          puts "(1) #{match.name_cn},#{match.match_id} has exist!"
+          #match.name_cn = "TEMP#{match.match_id}"
+          #match.save
+        end
+        match_name_check[match.name_cn] = { "id" => match.match_id.to_i, "import" => match.need_import }
+        1.upto(10) do |x|
+          src = <<-END_SRC
+            match_name = match.name#{x}
+            if match_name && match_name.size>0
+              if match_name_check.include?(match_name)
+                puts "(2) " + match_name + "(" + match.match_id.to_s + ") has exist!"
+                match.name#{x} = nil
+                match.save
+              else
+                match_name_check[match.name#{x}] = { "id" => match.match_id, "import" => match.need_import }
+              end
+            end
+          END_SRC
+          eval src
+        end
+      end
+    end
+    
   end
 end
 
