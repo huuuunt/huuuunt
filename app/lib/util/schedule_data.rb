@@ -4,9 +4,15 @@ require 'hpricot'
 
 require 'mysql/match'
 require 'mysql/team'
+require 'mysql/schedule'
+
+require 'util/common'
 
 module Huuuunt
   module ScheduleData
+
+    include Huuuunt::Common
+
     def self.included(base)
       base.extend Huuuunt::ScheduleData
     end
@@ -228,6 +234,62 @@ module Huuuunt
 
       Schedule.import(schedule)
     end
+
+    # 更新数据存在三种情况：
+    # 1、按照原定赛程日期进行比赛的数据
+    # 2、未按照原定赛程日期的比赛
+    #   2.1、英超这样的联赛，一个赛季中两支球队最多最会对阵两次，但是像奥甲这样的联赛，一个赛季中两支球队对阵超过两次。
+    def update_from_result(season, match_set)
+      type = 0
+      if season.size == 4       # 2003
+        type = 2
+      elsif season.size == 9    # 2003-2004
+        type = 1
+      end
+
+      return if type == 0
+
+      start_date = Match.match_date_range[type]['start']
+      end_date = Match.match_date_range[type]['end']
+      if type == 1
+        start_date = "#{season.split('-')[0]}-#{start_date}"
+        end_date = "#{season.split('-')[1]}-#{end_date}"
+      elsif type == 2
+        start_date = "#{season}-#{start_date}"
+        end_date = "#{season}-#{end_date}"
+      end
+
+      now_date = "#{Time.now.year}-#{Time.now.month}-#{Time.now.day}"
+
+      match_set.each do |match_id|
+        # 从赛程表中读取指定联赛指定赛季中到当前日期为止，尚未完成的赛事数据
+        schedule_data = {}
+        Schedule.where("matchyear=\"#{season}\" and matchno=#{match_id} and goal1 IS NULL and matchdt<=\"#{now_date}\"").each do |item|
+          match_datetime = item.matchdt.strftime('%Y-%m-%d %H:%M:%S')
+          matchinfono = create_matchinfono2(match_datetime, item.matchno, item.team1no, item.team2no)
+          schedule_data[matchinfono] = item
+        end
+
+        # 从赛果表中读取指定联赛指定赛季中已经完成的赛事数据
+        result_data = {}
+        Result.where("matchno=#{match_id} and matchdt>=\"#{start_date}\" and matchdt<=\"#{end_date}\"").each do |item|
+          result_data[item.matchinfono] = item
+          puts item.matchinfono
+        end
+
+        schedule_data.each do |key, item|
+          if result_data.has_key?(key)
+            
+          else
+            match_datetime = item.matchdt.strftime('%Y-%m-%d %H:%M:%S')
+            #puts "#{match_datetime}, #{item.matchno}, #{item.team1no}, #{item.team2no}"
+          end
+        end
+
+      end
+      
+    end
+
   end
 end
 

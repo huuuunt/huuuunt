@@ -79,7 +79,7 @@ commands = {
   "ResultCmd" => ["ResultDownloadCmd", "ResultPreprocessCmd", "ResultImportCmd"],
   "EuropeCmd" => ["EuropeDownloadCmd", "EuropePreprocessCmd", "EuropeCheckResultCmd", "EuropeImportCmd"],
   "AsiaCmd" => ["AsiaDownloadCmd", "AsiaPreprocessCmd", "AsiaCheckResultCmd", "AsiaImportCmd"],
-  "ScheduleCmd" => ["ScheduleDownloadCmd", "SchedulePreprocessCmd", "ScheduleImportCmd"]
+  "ScheduleCmd" => ["ScheduleDownloadCmd", "SchedulePreprocessCmd", "ScheduleImportCmd", "ScheduleUpdateCmd"]
   #"" => ["", "", ""]
 }
 

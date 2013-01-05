@@ -49,11 +49,14 @@ class ScheduleImportCmd < CmdParse::Command
   end
 end
 
+# 输入参数规则
+# 1、必须输入赛季，如2003、2003-2004，两种赛季格式必须区分
+# 2、如果要输入赛事ID参数，则必须输入同一种赛事ID，比如只能输入2003这种类型或者2003-2004这种类型
 class ScheduleUpdateCmd < CmdParse::Command
   def initialize
     super('update', false)
-    self.short_desc = "将预处理好的赛程数据导入数据库"
-    self.description = "将预处理好的赛程数据导入数据库"
+    self.short_desc = "从最新的赛果数据中更新赛程数据"
+    self.description = "从最新的赛果数据中更新赛程数据"
   end
 
   def execute(args)

@@ -7,6 +7,7 @@ class Match < ActiveRecord::Base
   cattr_accessor :match_id_map
 
   cattr_accessor :match_need_stat
+  cattr_accessor :match_date_range
 
   @@match_name_map = {}
   @@match_id_map = {}
@@ -45,6 +46,10 @@ class Match < ActiveRecord::Base
                                           "type"   => match.season_type.to_i
                                         }
   end
+
+  @@match_date_range = {}
+  @@match_date_range[1] = { "start" => "07-01", "end" => "06-30" }
+  @@match_date_range[2] = { "start" => "01-01", "end" => "12-31" }
 
 #  # 验证数据初始化成功代码,其中存在可能重复的数据，因此总数略少
 #  puts @@match_name_map.size
