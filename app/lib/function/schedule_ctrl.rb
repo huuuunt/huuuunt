@@ -36,12 +36,13 @@ class ScheduleCtrl
   end
 
   def self.import(args)
-    date_loop do |date|
-      csv_file = data_file_path(date, RESULTPATH, 'csv')
-      return unless File.exist?(csv_file)
-
-      insert_new_result(csv_file)
-    end
+#    以下代码似乎存在问题
+#    date_loop do |date|
+#      csv_file = data_file_path(date, SCHEDULEPATH, 'csv')
+#      return unless File.exist?(csv_file)
+#
+#      insert_new_result(csv_file)
+#    end
   end
 
   # 从赛果数据中更新比赛结果到赛程中

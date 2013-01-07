@@ -11,9 +11,18 @@ function checkAndOpenSchedule(match, season, phases) {
     // 检查指定参数中未处理的赛程
     $.get("http://localhost/huuuunt/check_schedule_data.php", {match: match, phases: phases, season: season}, function(data){
         var json = eval('(' + data + ')');
-        alert(json.schedule.join('|'));
-        for (i in json.schedule) {
+        if (json.schedule.length > 0) {
+            alert(json.schedule.join('|'));
+        } else {
+            alert("no schedule!");
+        }
+        for (i=0; i<json.schedule.length; i++) {
             //alert(json.schedule[i]);
+            chrome.tabs.create(
+            {
+                'url': 'http://app.gooooal.com/resultschedule.do?lid=' + match + '&sid=' + season + '&roundNum=' + json.schedule[i] + '&lang=tr'
+            }
+            );
         }
     });
 //        for (phase in arr_phases) {

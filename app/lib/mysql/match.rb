@@ -42,14 +42,16 @@ class Match < ActiveRecord::Base
   Match.where("season_type!=0").each do |match|
     @@match_need_stat[match.match_id] = {
                                           "bet007" => match.bet007_match_id.to_i,
-                                          "phases" => match.phases.to_i ,
+                                          "phases" => match.phases.to_i,
+                                          "phases_ex" => match.phases_ex,
+                                          "gooooal"  => match.gooooal_match_id_1,
                                           "type"   => match.season_type.to_i
                                         }
   end
 
-  @@match_date_range = {}
-  @@match_date_range[1] = { "start" => "07-01", "end" => "06-30" }
-  @@match_date_range[2] = { "start" => "01-01", "end" => "12-31" }
+#  @@match_date_range = {}
+#  @@match_date_range[1] = { "start" => "07-01", "end" => "06-30" }
+#  @@match_date_range[2] = { "start" => "01-01", "end" => "12-31" }
 
 #  # 验证数据初始化成功代码,其中存在可能重复的数据，因此总数略少
 #  puts @@match_name_map.size
@@ -109,6 +111,28 @@ class Match < ActiveRecord::Base
 
     def get_phases(match_id)
       @@match_need_stat[match_id.to_i]['phases']
+    end
+
+    def get_gooooal_phases(season, match_id)
+      phases_ex = @@match_need_stat[match_id.to_i]['phases_ex']
+      phases = @@match_need_stat[match_id.to_i]['phases']
+      current_year = Time.new.year
+      if phases_ex && phases_ex.size>0
+        current_year.downto(season.to_i) do |year|
+          arr_phase = phases_ex.split(';')
+          arr_phase.each do |item|
+            tmp_season = item.split(":")[0]
+            if tmp_season.to_i == year
+              phases = item.split(":")[2]
+            end
+          end
+        end
+      end
+      return phases
+    end
+
+    def get_gooooal_match_id(match_id)
+      @@match_need_stat[match_id.to_i]['gooooal']
     end
 
     # 赛事是否跨年

@@ -25,7 +25,6 @@
 $LOAD_PATH.unshift(File.dirname(File.expand_path("./", __FILE__)))
 
 require 'rubygems'
-require 'log4r'
 require 'cmdparse'
 #require 'net/http'
 #require 'iconv'
@@ -38,26 +37,10 @@ require 'cmd/result_cmd'
 require 'cmd/europe_cmd'
 require 'cmd/asia_cmd'
 require 'cmd/schedule_cmd'
+require 'cmd/schedule_gooooal_cmd'
+require 'cmd/score_cmd'
 
-###################
-# log4r日志模块配置 #
-###################
-$logger = Log4r::Logger.new("Huuuunt")
-# 日志记录等级设置
-$logger.level = Log4r::DEBUG
-formatter = Log4r::PatternFormatter.new(
-  :pattern => "%C[%l]: %M"
-  #:pattern => "%C[%l]:[%t] %M",
-  #:date_format => "%Y/%m/%d %H:%M:%S"
-)
-logfile = Log4r::FileOutputter.new(
-  "log",
-  {
-    :filename => File.expand_path("./log/huuuunt.log", File.dirname(__FILE__)),
-    :formatter => formatter,
-    :trunc => TRUE   # 下次运行是否先清空原先的日志文件内容
-  })
-$logger.outputters = logfile
+require 'util/huuuunt_log'
 
 ###################
 # CmdParse相关设置 #
@@ -79,8 +62,13 @@ commands = {
   "ResultCmd" => ["ResultDownloadCmd", "ResultPreprocessCmd", "ResultImportCmd"],
   "EuropeCmd" => ["EuropeDownloadCmd", "EuropePreprocessCmd", "EuropeCheckResultCmd", "EuropeImportCmd"],
   "AsiaCmd" => ["AsiaDownloadCmd", "AsiaPreprocessCmd", "AsiaCheckResultCmd", "AsiaImportCmd"],
-  "ScheduleCmd" => ["ScheduleDownloadCmd", "SchedulePreprocessCmd", "ScheduleImportCmd", "ScheduleUpdateCmd"]
-  #"" => ["", "", ""]
+  "ScheduleCmd" => ["ScheduleDownloadCmd", "SchedulePreprocessCmd", "ScheduleImportCmd", "ScheduleUpdateCmd"],
+  # Huuuunt schedule-gooooal preprocess 2007 1 2 4
+  # Huuuunt schedule-gooooal import 2007 1 2 4
+  "ScheduleGooooalCmd" => ["ScheduleGooooalPreprocessCmd", "ScheduleGooooalImportCmd", "ScheduleModifySeasonCmd"],
+  # Huuuunt score calc  2007 1 2 4
+  # Huuuunt score calc  2007
+  "ScoreCmd" => ["ScoreCalcCmd", "ScoreCheckCmd"]
 }
 
 commands.each do |m_cmd, s_cmds|
