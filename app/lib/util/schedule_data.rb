@@ -221,7 +221,7 @@ module Huuuunt
 
             exit if Schedule.schedule_exist?(new_season, match_id, phase_id, team1_id, team2_id)
             schedule << Schedule.new(
-                                      :matchyear => new_season,
+                                      :season    => new_season,
                                       :phase     => phase_id,
                                       :matchdt   => match_datetime,
                                       :matchno   => match_id,
@@ -264,7 +264,7 @@ module Huuuunt
       match_set.each do |match_id|
         # 从赛程表中读取指定联赛指定赛季中到当前日期为止，尚未完成的赛事数据
         schedule_data = {}
-        Schedule.where("matchyear=\"#{season}\" and matchno=#{match_id} and goal1 IS NULL and matchdt<=\"#{now_date}\"").each do |item|
+        Schedule.where("season=\"#{season}\" and matchno=#{match_id} and goal1 IS NULL and matchdt<=\"#{now_date}\"").each do |item|
           match_datetime = item.matchdt.strftime('%Y-%m-%d %H:%M:%S')
           matchinfono = create_matchinfono2(match_datetime, item.matchno, item.team1no, item.team2no)
           schedule_data[matchinfono] = item

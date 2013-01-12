@@ -34,9 +34,9 @@ function checkAndOpenSchedule(match, season, phases) {
 //        }
 }
 
-$(document).ready(function() {
-    // 访问服务器，读取待获取的赛事数据信息，并生成相应的label和button
-    $.get("http://localhost/huuuunt/get_all_match.php", {}, function(data){
+function getHistorySchedule() {
+        // 访问服务器，读取待获取的赛事数据信息，并生成相应的label和button
+    $.get("http://localhost/huuuunt/get_history_schedule.php", {}, function(data){
         // data数据案例:
         // {"match":
         //    [
@@ -76,7 +76,7 @@ $(document).ready(function() {
                     html_code += "<input type=\"button\" value=\"" + season + "\" onclick=\"checkAndOpenSchedule("+gooooal_id+", "+ season+", "+new_phases+")\" />";
                 }
             }
-            
+
             if (i%2 != 0) {
                 html_code += "<br/>";
             } else {
@@ -86,4 +86,35 @@ $(document).ready(function() {
 
         $('#match').html(html_code);
     })
+}
+
+function getNewSchedule() {
+    $.get("http://localhost/huuuunt/get_new_schedule.php", {}, function(data){
+        // data数据案例:
+        // {"match":
+        //    [
+        //      {"match_id":"1","name":"%E8%8B%B1%E8%B6%85","phases":[2,4,38]},
+        //      {"match_id":"19","name":"%E8%A5%BF%E4%B9%99","phases":[2,4,38]},
+        //      {"match_id":"24","name":"%E5%BE%B7%E7%94%B2","phases":[2,4,38]},
+        //      {"match_id":"39","name":"%E8%8D%B7%E4%B9%99","phases":[2,4,38]},
+        //      {"match_id":"40","name":"%E6%AF%94%E7%94%B2","phases":[2,4,38]},
+        //      {"match_id":"41","name":"%E6%AF%94%E4%B9%99","phases":[2,4,38]},
+        //    ]
+        //  }
+        var json = eval('(' + data + ')');
+        //alert(json.match.length);
+        var html_code = "";
+        for (i=0; i<json.match.length; i++) {
+
+        }
+    });
+}
+
+$(document).ready(function() {
+    getHistorySchedule();
+
+    $('#new_schedule').click(function() {
+        
+    });
+    
 });

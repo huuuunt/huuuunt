@@ -80,6 +80,8 @@ module Huuuunt
             team2_name = details[7]
             finrate = details[9]
 
+            #puts "#{team1_name}, #{team2_name}, #{finrate}"
+
             unless gooooal_asia_odd(finrate)
               new_finrates << finrate
             end
@@ -129,13 +131,13 @@ module Huuuunt
             team1_id = Team.get_team_id_by_name(team1_name)
             team2_id = Team.get_team_id_by_name(team2_name)
 
-#puts "#{phase_id},#{match_date},#{match_time},#{season},#{team1_id},#{team2_id},#{goal1},#{goal2},#{halfgoal1},#{halfgoal2},#{finrate},#{direction},#{result}"
+puts "#{phase_id},#{match_date},#{match_time},#{season},#{team1_id},#{team2_id},#{goal1},#{goal2},#{halfgoal1},#{halfgoal2},#{finrate},#{direction},#{result}"
 
             if Schedule.schedule_exist?(season, match_id, phase_id, team1_id, team2_id)
               Schedule.update_schedule(season, match_id, phase_id, team1_id, team2_id, "#{match_date} #{match_time}", goal1, goal2, halfgoal1, halfgoal2, finrate, direction, result)
             else
               schedule << Schedule.new(
-                                      :matchyear => season,
+                                      :season    => season,
                                       :phase     => phase_id,
                                       :matchdt   => "#{match_date} #{match_time}",
                                       :matchno   => match_id,
@@ -151,10 +153,10 @@ module Huuuunt
                                     )
             end
             
-          end
-        end
-        exit
-      end
+          end # until f.eof?
+        end # File.open(schedule_path, "r")
+
+      end # schedule_match_phase_loop
 
       Schedule.import(schedule) if schedule.size > 0
     end

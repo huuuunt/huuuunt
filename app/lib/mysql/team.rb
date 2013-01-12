@@ -64,6 +64,7 @@ class Team < ActiveRecord::Base
 
     # 根据球队名称查询球队ID
     def get_team_id_by_name(name)
+      return nil unless @@team_name_map[name]
       @@team_name_map[name]['id']
     end
 

@@ -65,10 +65,10 @@ commands = {
   "ScheduleCmd" => ["ScheduleDownloadCmd", "SchedulePreprocessCmd", "ScheduleImportCmd", "ScheduleUpdateCmd"],
   # Huuuunt schedule-gooooal preprocess 2007 1 2 4
   # Huuuunt schedule-gooooal import 2007 1 2 4
-  "ScheduleGooooalCmd" => ["ScheduleGooooalPreprocessCmd", "ScheduleGooooalImportCmd", "ScheduleModifySeasonCmd"],
+  "ScheduleGooooalCmd" => ["ScheduleGooooalPreprocessCmd", "ScheduleGooooalImportCmd"],
   # Huuuunt score calc  2007 1 2 4
   # Huuuunt score calc  2007
-  "ScoreCmd" => ["ScoreCalcCmd", "ScoreCheckCmd"]
+  "ScoreCmd" => ["ScoreCalcCmd", "ScoreCheckCmd", "SoreAsiaCalcCmd", "ScoreAsiaCheckCmd"]
 }
 
 commands.each do |m_cmd, s_cmds|

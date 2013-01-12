@@ -18,6 +18,7 @@ class ScoreCtrl
   def self.calc(args)
     flag, season, match_set = args_analyze(args)
     return unless flag
+    #puts "#{season} #{match_set.join(',')}"
     calculate_score(season, match_set)
   end
 

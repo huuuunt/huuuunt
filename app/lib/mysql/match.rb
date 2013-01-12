@@ -45,6 +45,7 @@ class Match < ActiveRecord::Base
                                           "phases" => match.phases.to_i,
                                           "phases_ex" => match.phases_ex,
                                           "gooooal"  => match.gooooal_match_id_1,
+                                          "gooooal_2"  => match.gooooal_match_id_2,
                                           "type"   => match.season_type.to_i
                                         }
   end
@@ -135,6 +136,10 @@ class Match < ActiveRecord::Base
       @@match_need_stat[match_id.to_i]['gooooal']
     end
 
+    def get_gooooal_match_id_2(match_id)
+      @@match_need_stat[match_id.to_i]['gooooal_2']
+    end
+    
     # 赛事是否跨年
     def match_schedule_two_year?(match_id)
       @@match_need_stat[match_id.to_i]['type']==1
@@ -142,6 +147,7 @@ class Match < ActiveRecord::Base
 
     # 根据赛事名称查询赛事ID
     def get_match_id_by_name(name)
+      return nil unless @@match_name_map[name]
       @@match_name_map[name]['id']
     end
 
