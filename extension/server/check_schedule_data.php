@@ -15,7 +15,7 @@ $arr = array();
 // $schedule存放指定赛事、赛季中未读取的赛程轮次
 $schedule = array();
 
-$filepath = "/usr/share/nginx/www/gooooal/" . $season . "/" . $match . "/";
+$filepath = "/var/www/gooooal/" . $season . "/" . $match . "/";
 
 if (file_exists($filepath)) {
 	//echo "$filepath exists.<br/>";
