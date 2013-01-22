@@ -9,7 +9,7 @@ var match = url.param("lid");               // 赛事
 var phase = url.param("roundNum");          // 轮次
 
 //alert(season + " " + match + " " + phase);
-//alert($("table.dataSheet")[0].innerText);
+alert($("table.dataSheet")[0].innerText);
 
 var requestData = {
                         "season":       season,
@@ -18,7 +18,7 @@ var requestData = {
                         "schedule":     $("table.dataSheet")[0].innerText
                   };
 
-$.post('http://localhost/huuuunt/save_schedule_data.php', requestData, null);
+$.post('http://localhost:8080/save_schedule_data.php', requestData, null);
 
 
 

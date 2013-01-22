@@ -151,6 +151,11 @@ class Match < ActiveRecord::Base
       @@match_name_map[name]['id']
     end
 
+    def get_match_name_by_id(match_id)
+      return nil unless @@match_id_map[match_id.to_i]
+      @@match_id_map[match_id.to_i]['name']
+    end
+
     # 批量插入赛事信息
     def insert_new_match_name(match_name_arr)
       return 0 if match_name_arr.size == 0

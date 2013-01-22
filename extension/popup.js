@@ -9,7 +9,7 @@ function checkAndOpenSchedule(match, season, phases) {
     match = Number(match);
     alert(phases + "," + season + "," + match);
     // 检查指定参数中未处理的赛程
-    $.get("http://localhost/huuuunt/check_schedule_data.php", {match: match, phases: phases, season: season}, function(data){
+    $.get("http://localhost:8080/huuuunt/check_schedule_data.php", {match: match, phases: phases, season: season}, function(data){
         var json = eval('(' + data + ')');
         if (json.schedule.length > 0) {
             alert(json.schedule.join('|'));
@@ -37,7 +37,7 @@ function checkAndOpenSchedule(match, season, phases) {
 function getHistorySchedule() {
 
         // 访问服务器，读取待获取的赛事数据信息，并生成相应的label和button
-    $.get("http://localhost/huuuunt/get_history_schedule.php", {}, function(data){
+    $.get("http://localhost:8080/huuuunt/get_history_schedule.php", {}, function(data){
         // data数据案例:
         // {"match":
         //    [
@@ -90,7 +90,7 @@ function getHistorySchedule() {
 }
 
 function getNewSchedule() {
-    $.get("http://localhost/huuuunt/get_new_schedule.php", {}, function(data){
+    $.get("http://localhost:8080/huuuunt/get_new_schedule.php", {}, function(data){
         // data数据案例:
         // {"match":
         //    [
@@ -111,28 +111,12 @@ function getNewSchedule() {
     });
 }
 
-function settings() {
-	var html_code = "";
-	html_code += "<input type=\"button\" value=\"2012\" id=\"m2012\"";
-	$('#match').html(html_code);
-	//document.querySelector('#m2012').addEventListener('click', checkAndOpenSchedule(4, 2012, 22));
-checkAndOpenSchedule(1, 2012, 23);
-checkAndOpenSchedule(2, 2012, 22);
-}
 
 $(document).ready(function() {
-    settings();
 
-
-/*	
-	$('#m2012').click(function() {
-		checkAndOpenSchedule(4, 2012, 22);
-	});
-*/
-/*
     $('#new_schedule').click(function() {
         
     });
-*/    
+  
 });
 

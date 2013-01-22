@@ -75,7 +75,7 @@ module Huuuunt
           end
 
           if team1no==1 or team2no==1
-            puts "#{result1}, #{result2}, #{wincnt1}, #{wincnt2}, #{deucecnt1}, #{deucecnt2}, #{losscnt1}, #{losscnt2}"
+            #puts "#{result1}, #{result2}, #{wincnt1}, #{wincnt2}, #{deucecnt1}, #{deucecnt2}, #{losscnt1}, #{losscnt2}"
           end
 
           # 统计主场球队数据
@@ -120,7 +120,7 @@ module Huuuunt
             scores[team1no][7] = scores[team1no][7] + "#{result1}"
             scores[team1no][8] = scores[team1no][8] + goal2
 
-            puts "#{scores[team1no][0]}, #{result1}" if team1no==1
+            #puts "#{scores[team1no][0]}, #{result1}" if team1no==1
           end
           # 将客场数据加入总场次统计数据中
           if scores.has_key?(team2no)
@@ -134,7 +134,7 @@ module Huuuunt
             scores[team2no][7] = scores[team2no][7] + "#{result2}"
             scores[team2no][8] = scores[team2no][8] + goal1
             
-            puts "#{scores[team2no][0]}, #{result2}" if team2no==1
+            #puts "#{scores[team2no][0]}, #{result2}" if team2no==1
           end
           
           # 因为读取轮次赛事时，按照matchdt降序排列，所以近6轮的数据只需要在场次达到6场时记录一次即可
@@ -174,6 +174,7 @@ module Huuuunt
         # 以上积分相关数据统计完成，插入或更新积分榜数据
         scores.each_key do |key|
           puts "#{key}, #{scores[key].join('-')}"
+          
           Score.insert_or_update_all(match_id, season, key,
             scores[key][0], scores[key][1], scores[key][2], scores[key][3], scores[key][4], scores[key][5], scores[key][6], scores[key][8],
             h_home[key][0], h_home[key][1], h_home[key][2], h_home[key][3], h_home[key][4], h_home[key][5], h_home[key][6], h_home[key][8],
@@ -188,6 +189,7 @@ module Huuuunt
 
     def check_score(season, match_set)
       match_set.each do |match_id|
+        puts "start #{match_id}, #{Match.get_match_name_by_id(match_id)}"
         score_db = {}
         score_db[0] = {}
         score_db[1] = {}
@@ -203,7 +205,8 @@ module Huuuunt
         # 初始化数据库中的积分数据
         score_db_set = Score.get_score_by_match_season(season, match_id)
         score_db_set.each do |item|
-          score_db[0][item.teamno.to_i] = [item.score.to_i, item.matchcnt.to_i, item.wincnt.to_i, item.deucecnt.to_i, item.losscnt.to_i, item.wingoal.to_i, item.lossgoal.to_i, item.goal.to_i]
+          #puts "#{item.teamno.to_i}, #{Team.get_team_name_by_id(item.teamno.to_i)}"
+          score_db[0][item.teamno.to_i] = [item.score.to_i-item.point.to_i, item.matchcnt.to_i, item.wincnt.to_i, item.deucecnt.to_i, item.losscnt.to_i, item.wingoal.to_i, item.lossgoal.to_i, item.goal.to_i]
           score_db[1][item.teamno.to_i] = [item.scoreH.to_i, item.matchcntH.to_i, item.wincntH.to_i, item.deucecntH.to_i, item.losscntH.to_i, item.wingoalH.to_i, item.lossgoalH.to_i, item.goalH.to_i]
           score_db[2][item.teamno.to_i] = [item.scoreA.to_i, item.matchcntA.to_i, item.wincntA.to_i, item.deucecntA.to_i, item.losscntA.to_i, item.wingoalA.to_i, item.lossgoalA.to_i, item.goalA.to_i]
           score_db[3][item.teamno.to_i] = [item.score6.to_i, item.matchcnt6.to_i, item.wincnt6.to_i, item.deucecnt6.to_i, item.losscnt6.to_i, item.wingoal6.to_i, item.lossgoal6.to_i, item.goal6.to_i]
@@ -212,8 +215,8 @@ module Huuuunt
 
         # 读取并分析整理gooooal中的积分数据
         scores_url = "http://app.gooooal.com/competition.do?lid=#{Match.get_gooooal_match_id(match_id)}&sid=#{season}&pid=#{Match.get_gooooal_match_id_2(match_id)}&lang=tr"
-        scores_data = Net::HTTP::Proxy('192.168.13.19', 7777).get(URI.parse(scores_url))
-        #scores_htm = Net::HTTP.get(URI.parse(scores_url))
+        #scores_data = Net::HTTP::Proxy('192.168.13.19', 7777).get(URI.parse(scores_url))
+        scores_data = Net::HTTP.get(URI.parse(scores_url))
 
         doc = Hpricot(scores_data)
         # 0,1,2,3分别代表总积分、主场积分、客场积分、近6场积分
@@ -224,12 +227,16 @@ module Huuuunt
           count = 0
           scores.each do |score|
             count += 1
+            # 第一行是字段名栏，需要忽略
             next if count==1
             content = ""
             details = score/'td'
-
+            # 有时候会在其中插入一条通知信息，需要忽略
+            next if details.size < 8
+            
             team_name = details[1].inner_text
             team_id = Team.get_team_id_by_name(team_name)
+            #puts "#{team_id}, #{team_name}"
             unless team_id
               puts "#{team_name}"  
               exit
@@ -256,9 +263,11 @@ module Huuuunt
             #puts team_id
             #puts "+++++++++++++++++++++++++++++"
             scores.each_index do |s_index|
-              #puts "#{score_db[index][team_id][s_index]}, #{score_gooooal[index][team_id][s_index]}"
+              #puts "#{index},#{team_id},#{s_index}"
+              #puts "=== #{score_db[index][team_id][s_index]}"
+              #puts "=== #{score_gooooal[index][team_id][s_index]}"
               unless score_db[index][team_id][s_index] == score_gooooal[index][team_id][s_index]
-                puts "#{season},#{match_id},#{team_id} data is not correct."
+                puts "#{season},#{match_id},#{team_id},#{Team.get_team_name_by_id(team_id)} data is not correct."
               end
             end
             #puts "+++++++++++++++++++++++++++++"

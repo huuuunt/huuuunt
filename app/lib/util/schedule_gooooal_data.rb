@@ -41,20 +41,21 @@ module Huuuunt
     def schedule_match_phase_loop(season, match_set)
       # 依次处理每个赛事
       match_set.each do |match_id|
+        puts "#{season}, #{match_id}, #{Match.get_match_name_by_id(match_id)}"
         # 获取当前赛事的赛季轮次
         phases = Match.get_gooooal_phases(season, match_id)
         gooooal_match_id = Match.get_gooooal_match_id(match_id)
 
         # 依次处理每个轮次的数据
-        1.upto(phases) do |phase_id|
+        1.upto(phases.to_i) do |phase_id|
           yield match_id, gooooal_match_id, phase_id
         end
       end
     end
 
     def display_new_teams_finrates(teams, finrates)
-      teams.each do |team|
-        puts "#{team['team_name']}, #{Match.match_id_map[team['match_id']]['name']}, #{team['phase_id']}"
+      teams.each do |team_name, team_info|
+        puts "#{team_name}, #{Match.match_id_map[team_info['match_id']]['name']}, #{team_info['phase_id']}, #{team_info['gooooal_match_id']}"
       end
 
       finrates.each do |finrate|
@@ -63,11 +64,13 @@ module Huuuunt
     end
 
     def preprocess_team(season, match_set, path)
-      new_teams = []
+      new_teams = {}
+      new_teams_insert = []
       new_finrates = []
       schedule_match_phase_loop(season, match_set) do |match_id, gooooal_match_id, phase_id|
         continue unless schedule_data_file_exist?(season, gooooal_match_id, phase_id, path)
         schedule_path = schedule_data_file(season, gooooal_match_id, phase_id, path)
+        #puts "#{schedule_path}"
         File.open(schedule_path, "r") do |f|
           i = 0
           until f.eof?
@@ -82,28 +85,38 @@ module Huuuunt
 
             #puts "#{team1_name}, #{team2_name}, #{finrate}"
 
-            unless gooooal_asia_odd(finrate)
-              new_finrates << finrate
+            if finrate and finrate.length>0 and finrate.strip!='-'
+              unless gooooal_asia_odd(finrate)
+                new_finrates << finrate
+                puts "#{gooooal_match_id},#{phase_id},#{i}: finrate: #{finrate}, #{finrate.class}"
+              end
             end
+            
 
             unless Team.team_name_exist?(team1_name)
-              new_teams << { "team_name" => team1_name, "match_id" => match_id, "phase_id" => phase_id }
+              new_teams[team1_name] = { "team_name" => team1_name, "match_id" => match_id, "phase_id" => phase_id, "gooooal_match_id" => gooooal_match_id }
+              new_teams_insert << { "team_name" => team1_name, "match_id" => match_id, "phase_id" => phase_id, "gooooal_match_id" => gooooal_match_id }
+              #puts "#{i}: #{team1_name}, #{Match.match_id_map[match_id]['name']}, #{phase_id}"
             end
             unless Team.team_name_exist?(team2_name)
-              new_teams << { "team_name" => team2_name, "match_id" => match_id, "phase_id" => phase_id }
+              new_teams[team2_name] = { "team_name" => team2_name, "match_id" => match_id, "phase_id" => phase_id, "gooooal_match_id" => gooooal_match_id }
+              new_teams_insert << { "team_name" => team2_name, "match_id" => match_id, "phase_id" => phase_id, "gooooal_match_id" => gooooal_match_id }
+              #puts "#{i}: #{team2_name}, #{Match.match_id_map[match_id]['name']}, #{phase_id}"
             end
           end
         end
       end
 
       display_new_teams_finrates(new_teams, new_finrates)
+
+      Team.insert_new_team_name(new_teams_insert)
     end
 
     # 读取csv文件中的赛程数据，导入数据库
     def insert_schedule(season, match_set, path)
       schedule = []
       schedule_match_phase_loop(season, match_set) do |match_id, gooooal_match_id, phase_id|
-        continue unless schedule_data_file_exist?(season, gooooal_match_id, phase_id, path)
+        next unless schedule_data_file_exist?(season, gooooal_match_id, phase_id, path)
         schedule_path = schedule_data_file(season, gooooal_match_id, phase_id, path)
         File.open(schedule_path, "r") do |f|
           i = 0
@@ -119,14 +132,26 @@ module Huuuunt
             team1_name = details[5]
             team2_name = details[7]
             goal = details[6]
-            goal1,goal2 = goal.split("-")
+            if goal
+              goal1,goal2 = goal.split("-")
+            else
+              goal1 = nil
+              goal2 = nil
+            end
             halfgoal = details[8]
-            halfgoal1,halfgoal2 = halfgoal.split("-")
+            if halfgoal
+              halfgoal1,halfgoal2 = halfgoal.split("-")
+            else
+              halfgoal1 = nil
+              halfgoal2 = nil
+            end
             s_finrate = details[9]
             finrate = gooooal_asia_odd(s_finrate)
             direction = gooooal_asia_odd_direction(s_finrate)
 
             result = calc_asia_result(finrate, goal1, goal2)
+
+            finrate = finrate.abs if finrate
 
             team1_id = Team.get_team_id_by_name(team1_name)
             team2_id = Team.get_team_id_by_name(team2_name)
@@ -147,7 +172,7 @@ puts "#{phase_id},#{match_date},#{match_time},#{season},#{team1_id},#{team2_id},
                                       :goal2     => goal2,
                                       :halfgoal1 => halfgoal1,
                                       :halfgoal2 => halfgoal2,
-                                      :finrate   => finrate.abs,
+                                      :finrate   => finrate,
                                       :direction => direction,
                                       :result    => result
                                     )

@@ -54,6 +54,7 @@ module Huuuunt
 
     # Example: finrate (0.75)
     def calc_asia_result(finrate, goal1, goal2)
+      return nil unless finrate
       result = (goal1.to_i - goal2.to_i) * 4 - (finrate.to_i)
       #puts "result = #{result} "
       result = result.to_i
@@ -71,12 +72,19 @@ module Huuuunt
     end
 
     def gooooal_asia_odd_direction(finrate)
+      return nil unless finrate
       return -1 if finrate.include?("受让")
       return 1
     end
 
     def gooooal_asia_odd(finrate)
+      return nil unless finrate
+      
       arr_finrate = {
+        "受让四球"        => -16,
+        "受让三球半/四球"  => -15,
+        "受让三球半"      => -14,
+        "受让三球/三球半"  => -13,
         "受让三球"        => -12,
         "受让两球半/三球"   => -11,
         "受让两球半"       => -10,
@@ -91,6 +99,10 @@ module Huuuunt
         "受让平手/半球"     => -1,
         "受让平手"          => 0,
 
+        "四球"        => 16,
+        "三球半/四球"  => 15,
+        "三球半"      => 14,
+        "三球/三球半"  => 13,
         "三球"        => 12,
         "两球半/三球"   => 11,
         "两球半"       => 10,

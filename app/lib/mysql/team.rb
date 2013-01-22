@@ -68,6 +68,11 @@ class Team < ActiveRecord::Base
       @@team_name_map[name]['id']
     end
 
+    def get_team_name_by_id(team_id)
+      return nil unless @@team_id_map[team_id.to_i]
+      @@team_id_map[team_id.to_i]['cn']
+    end
+
     def insert_new_team_name(team_name_arr)
       return 0 if team_name_arr.size == 0
 
