@@ -1,5 +1,7 @@
 # 赛程数据导入程序
 
+require 'json'
+
 require 'rubygems'
 require 'mysql/schedule'
 
@@ -15,7 +17,7 @@ class ScheduleGooooalCtrl
   include Huuuunt::ScheduleGooooalData
   include Huuuunt::Common
 
-  SCHEDULEPATH = File.expand_path("../../data/schedule/gooooal/", File.dirname(__FILE__))
+  SCHEDULEPATH = File.expand_path("../../../extension/server/gooooal/", File.dirname(__FILE__))
 
   # 默认下载赛程数据到最新日期为止
   # season: 赛季信息，如2010、2010-2011
@@ -33,6 +35,30 @@ class ScheduleGooooalCtrl
     flag, season, match_set = args_analyze(args)
     return unless flag
     insert_schedule(season, match_set, SCHEDULEPATH)
+  end
+
+  def self.update_preprocess(args)
+    flag = check_params(args[0], [])
+    return unless flag
+    # 读取schedule.log，获取待更新的赛程信息
+    json_data = IO.read(File.expand_path("schedule.log", SCHEDULEPATH))
+    #puts json_data
+    #puts JSON.parse(json_data)
+    schedule_data = JSON.parse(json_data)
+
+    # 依次验证球队名称数据
+    update_preprocess_team(schedule_data, args[0], SCHEDULEPATH)
+  end
+
+  def self.update(args)
+    flag = check_params(args[0], [])
+    return unless flag
+    # 读取schedule.log，获取待更新的赛程信息
+    json_data = IO.read(File.expand_path("schedule.log", SCHEDULEPATH))
+    schedule_data = JSON.parse(json_data)
+
+    # 依次导入赛程数据
+    update_schedule(schedule_data, args[0], SCHEDULEPATH)
   end
 
   def self.check_params(season, match_set)
@@ -62,7 +88,7 @@ class ScheduleGooooalCtrl
     return TRUE
   end
 
-  # 检查输入参数是否正确
+  # 检查新赛程导入用的输入参数是否正确
   # schedule-gooooal preprocess 2007 1 2 3
   def self.args_analyze(args)
     # flag用于标识输入参数是否正确

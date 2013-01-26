@@ -9,7 +9,7 @@ function checkAndOpenSchedule(match, season, phases) {
     match = Number(match);
     alert(phases + "," + season + "," + match);
     // 检查指定参数中未处理的赛程
-    $.get("http://localhost:8080/huuuunt/check_schedule_data.php", {match: match, phases: phases, season: season}, function(data){
+    $.get("http://localhost:8080/check_schedule_data.php", {match: match, phases: phases, season: season}, function(data){
         var json = eval('(' + data + ')');
         if (json.schedule.length > 0) {
             alert(json.schedule.join('|'));
@@ -25,19 +25,11 @@ function checkAndOpenSchedule(match, season, phases) {
             );
         }
     });
-//        for (phase in arr_phases) {
-//            chrome.tabs.create(
-//            {
-//                'url': 'http://app.gooooal.com/resultschedule.do?lid=' + match + '&sid=' + season + '&roundNum=' + phase + '&lang=tr'
-//            }
-//            );
-//        }
 }
 
 function getHistorySchedule() {
-
         // 访问服务器，读取待获取的赛事数据信息，并生成相应的label和button
-    $.get("http://localhost:8080/huuuunt/get_history_schedule.php", {}, function(data){
+    $.get("http://localhost:8080/get_history_schedule.php", {}, function(data){
         // data数据案例:
         // {"match":
         //    [
@@ -89,8 +81,11 @@ function getHistorySchedule() {
     })
 }
 
+// 实现一次获取指定数量的赛程，下一次从上一次结束的地方开始
 function getNewSchedule() {
-    $.get("http://localhost:8080/huuuunt/get_new_schedule.php", {}, function(data){
+    var amount = Number($.cookie('gooooal'));
+    alert(amount);
+    $.get("http://localhost:8080/get_new_schedule.php", {}, function(data){
         // data数据案例:
         // {"match":
         //    [
@@ -102,21 +97,60 @@ function getNewSchedule() {
         //      {"match_id":"41","name":"%E6%AF%94%E4%B9%99","phases":[2,4,38]},
         //    ]
         //  }
+        //alert(data);
         var json = eval('(' + data + ')');
         //alert(json.match.length);
-        var html_code = "";
+        var start = amount; 
+        var end = amount+15;
+        var count_history = 0   // 用于计算已获取的赛程情况
+        var count_new = 0 // 用于计算正在获取的赛程情况
         for (i=0; i<json.match.length; i++) {
-
-        }
+            //alert(json.match[i].phases.length);
+            for (j=0; j<json.match[i].phases.length; j++) {
+                if (count_history < start) {
+                    count_history++;
+                    continue;
+                }
+                match = json.match[i].match_id;
+                season = 2012;
+                roundNum = json.match[i].phases[j];
+                //alert(match + " " + season + " " + roundNum);
+                chrome.tabs.create(
+                {
+                    'url': 'http://app.gooooal.com/resultschedule.do?lid=' + match + '&sid=' + season + '&roundNum=' + roundNum + '&lang=tr'
+                }
+                );
+                count_new++;
+                if ( (start+count_new) >= end ) {
+                    $.cookie('gooooal', end);
+                    return;
+                }
+            } // for j
+        } // for i
+        $.cookie('gooooal', start+count_new);
     });
 }
 
+function writeUpdateScheduleLog() {
+    $.get("http://localhost:8080/save_get_new_schedule_log.php", {}, null);
+}
 
 $(document).ready(function() {
 
-    $('#new_schedule').click(function() {
+    $('#new_season_schedule').click(function() {
         
     });
-  
+
+    $('#update_schedule').click(function() {
+        getNewSchedule();
+    });
+
+    $('#cookie_reset').click(function() {
+        $.cookie('gooooal', 0);
+    });
+
+    $('#update_schedule_log').click(function() {
+        writeUpdateScheduleLog();
+    });
 });
 

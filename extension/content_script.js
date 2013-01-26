@@ -9,7 +9,7 @@ var match = url.param("lid");               // 赛事
 var phase = url.param("roundNum");          // 轮次
 
 //alert(season + " " + match + " " + phase);
-alert($("table.dataSheet")[0].innerText);
+//alert($("table.dataSheet")[0].innerText);
 
 var requestData = {
                         "season":       season,

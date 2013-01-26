@@ -1,7 +1,7 @@
 <?php
 
 # 允许跨域访问
-header("Access-Control-Allow-Origin: *"); 
+header("Access-Control-Allow-Origin: *");
 
 $conn = mysql_connect("localhost","root","mysql");
 if (!$conn) {
@@ -11,9 +11,9 @@ if (!$conn) {
 mysql_select_db("huuuunt",$conn);
 
 #$sql = "SELECT matchno, phase FROM cms_data_schedule where matchdt < curdate() and goal1 is null and goal2 is null and (season=2012 or season=2013) order by matchno,matchdt;";
-$sql = "SELECT m.gooooal_match_id_1, c.phase FROM huuuunt.cms_data_schedule c
+$sql = "SELECT c.matchno, m.gooooal_match_id_1, c.phase FROM huuuunt.cms_data_schedule c
 inner join huuuunt.cms_data_matches m
-where c.matchdt <= date_add(curdate(), interval 5 day) and c.goal1 is null and c.goal2 is null and (c.season=2012 or c.season=2013) and c.matchno=m.match_id
+where c.matchdt < date_add(curdate(), interval 5 day) and c.goal1 is null and c.goal2 is null and (c.season=2012 or c.season=2013) and c.matchno=m.match_id
 order by c.matchno,c.matchdt
 ";
 
@@ -23,7 +23,7 @@ $tmp_match_info = array();
 mysql_query("set names utf8");
 $result = mysql_query($sql, $conn);
 while ($row = mysql_fetch_row($result)) {
-    $tmp_match_info[$row[0]][] = $row[1];
+    $tmp_match_info[$row[0]."-".$row[1]][] = $row[2];
 	//echo $row[0].",".$row[1];
 	//echo "<br/>";
 }
@@ -41,7 +41,8 @@ foreach($tmp_match_info as $key => $value) {
 }
 
 foreach($tmp_match_info as $key => $value) {
-    $match_info[] = array( "match_id" => $key, "phases" => $value );
+    list($match_id, $gooooal_match_id) = split('-', $key);
+    $match_info[] = array( "match_id" => $match_id, 'gooooal_match_id' => $gooooal_match_id, "phases" => $value );
 }
 
 /*
@@ -53,9 +54,14 @@ foreach ($match_info as $value) {
 
 mysql_close($conn);
 
-$json = array ("match" => $match_info);
+//$json = array ("match" => $match_info);
 
-echo json_encode($json);
+//echo json_encode($json);
+
+$datalogfile = "/home/liuf/github/huuuunt/extension/server/gooooal/schedule.log";
+$logFileHandle = fopen($datalogfile, "w+");
+fwrite($logFileHandle, json_encode($match_info));
+fclose($logFileHandle);
 
 ?>
 

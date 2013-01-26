@@ -16,7 +16,7 @@ fclose($logFileHandle);
 */
 
 //$datafile = "/home/liuf/github/huuuunt/app/data/schedule/gooooal/2007/1/" . $phase;
-$datafile = "/home/liuf/github/huuuunt/app/data/schedule/gooooal/" . $season . "/" . $match . "/" . $phase;
+$datafile = "/home/liuf/github/huuuunt/extension/server/gooooal/" . $season . "/" . $match . "/" . $phase;
 $logFileHandle = fopen($datafile, "w+");
 fwrite($logFileHandle, $schedule);
 fclose($logFileHandle);

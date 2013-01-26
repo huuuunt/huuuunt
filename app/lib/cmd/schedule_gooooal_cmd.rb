@@ -21,6 +21,7 @@ class ScheduleGooooalPreprocessCmd < CmdParse::Command
   end
 
   def execute(args)
+    # args: 2012 1 2
     ScheduleGooooalCtrl.preprocess(args)
   end
 end
@@ -34,6 +35,32 @@ class ScheduleGooooalImportCmd < CmdParse::Command
 
   def execute(args)
     ScheduleGooooalCtrl.import(args)
+  end
+end
+
+class ScheduleGooooalUpdatePreprocessCmd < CmdParse::Command
+    def initialize
+    super('update-preprocess', false)
+    self.short_desc = "检查待更新的赛程数据是否存在不能识别球队信息"
+    self.description = "检查待更新的赛程数据是否存在不能识别球队信息"
+  end
+
+  def execute(args)
+    # args: 2012
+    ScheduleGooooalCtrl.update_preprocess(args)
+  end
+end
+
+class ScheduleGooooalUpdateCmd < CmdParse::Command
+  def initialize
+    super('update', false)
+    self.short_desc = "将预处理好的待更新的赛程数据导入数据库"
+    self.description = "将预处理好的待更新的赛程数据导入数据库"
+  end
+
+  def execute(args)
+    # args: 2012
+    ScheduleGooooalCtrl.update(args)
   end
 end
 
