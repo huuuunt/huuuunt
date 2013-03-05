@@ -39,6 +39,7 @@ require 'cmd/asia_cmd'
 require 'cmd/schedule_cmd'
 require 'cmd/schedule_gooooal_cmd'
 require 'cmd/score_cmd'
+require 'cmd/rank_cmd'
 
 require 'util/huuuunt_log'
 
@@ -65,10 +66,11 @@ commands = {
   "ScheduleCmd" => ["ScheduleDownloadCmd", "SchedulePreprocessCmd", "ScheduleImportCmd", "ScheduleUpdateCmd"],
   # Huuuunt schedule-gooooal preprocess 2007 1 2 4
   # Huuuunt schedule-gooooal import 2007 1 2 4
-  "ScheduleGooooalCmd" => ["ScheduleGooooalPreprocessCmd", "ScheduleGooooalImportCmd", "ScheduleGooooalUpdatePreprocessCmd", "ScheduleGooooalUpdateCmd"],
+  "ScheduleGooooalCmd" => ["ScheduleGooooalPreprocessCmd", "ScheduleGooooalImportCmd", "ScheduleGooooalCheckResultCmd", "ScheduleGooooalUpdatePreprocessCmd", "ScheduleGooooalUpdateCmd"],
   # Huuuunt score calc  2007 1 2 4
   # Huuuunt score calc  2007
-  "ScoreCmd" => ["ScoreCalcCmd", "ScoreCheckCmd", "SoreAsiaCalcCmd", "ScoreAsiaCheckCmd"]
+  "ScoreCmd" => ["ScoreCalcCmd", "ScoreCheckCmd", "SoreAsiaCalcCmd", "ScoreAsiaCheckCmd"],
+  "RankCmd" => ["RankCalcBaseCmd", "RankCalcHistoryCmd"]
 }
 
 commands.each do |m_cmd, s_cmds|

@@ -61,6 +61,12 @@ class ScheduleGooooalCtrl
     update_schedule(schedule_data, args[0], SCHEDULEPATH)
   end
 
+  def self.check_result(args)
+    flag, season, match_set = args_analyze(args)
+    return unless flag
+    check_schedule_in_result(season, match_set)
+  end
+
   def self.check_params(season, match_set)
     # 初始化从2003年开始的season数据用于验证
     start_year = 2003

@@ -39,7 +39,7 @@ class ResultCtrl
     end
   end
 
-  def self.update(args)
+  def self.import(args)
     date_loop do |date|
       csv_file = data_file_path(date, RESULTPATH, 'csv')
       return unless File.exist?(csv_file)
@@ -57,10 +57,12 @@ class ResultCtrl
     start_date = Result.lastest_date("Date")
     end_date = now_date("Date")
 
+    #start_date = Date.parse("2012-09-16")
     end_date = Date.parse("2011-06-30")
 
     while start_date <= end_date
-      $logger.debug("Result date : #{start_date.to_s}")
+      #$logger.debug("Result date : #{start_date.to_s}")
+      puts "Result date: #{start_date.to_s}"
       yield start_date
       start_date = start_date.succ
     end

@@ -81,10 +81,12 @@ module Huuuunt
         #result_data = Net::HTTP::Proxy('192.168.21.2', 80).get(URI.parse(result_url))
         result_data = Net::HTTP.get(URI.parse(result_url))
       rescue Exception=>ex
-        $logger.error("#{path} download failed! #{ex}")
+        #$logger.error("#{path} download failed! #{ex}")
       end
 
-      $logger.debug("Result #{date} data download successfully!!!")
+      puts "Result #{date} download successfully!"
+
+      #$logger.debug("Result #{date} data download successfully!!!")
 
       # 计算数据文件保存路径
       result_html_file = data_file_path(date, path, 'html')
@@ -96,7 +98,7 @@ module Huuuunt
       result_csv_file = data_file_path(date, path, 'csv')
       result_html2csv(result_html_file, result_csv_file)
 
-      $logger.debug("Result #{date} file convert to csv successfully!!!")
+      #$logger.debug("Result #{date} file convert to csv successfully!!!")
     end
 
     # 判断赛果数据中的赛事名称是否在数据库中已经存在
@@ -227,7 +229,8 @@ module Huuuunt
                                    :status => status
                        )
           else
-            $logger.warn("#{matchinfono} exist!!! --- #{match_dt}, #{Match.match_id_map[match_id]['name']}, #{Team.team_id_map[team1_id]['team_name']}, #{Team.team_id_map[team2_id]['team_name']}")
+            #$logger.warn("#{matchinfono} exist!!! --- #{match_dt}, #{Match.match_id_map[match_id]['name']}, #{Team.team_id_map[team1_id]['team_name']}, #{Team.team_id_map[team2_id]['team_name']}")
+            puts "#{matchinfono} exist!!! --- #{match_dt}, #{Match.match_id_map[match_id]['name']}, #{Team.team_id_map[team1_id]['team_name']}, #{Team.team_id_map[team2_id]['team_name']}"
             return
           end
         end # until f.eof?

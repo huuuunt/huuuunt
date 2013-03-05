@@ -45,7 +45,7 @@ class ResultImportCmd < CmdParse::Command
   end
 
   def execute(args)
-    ResultCtrl.update(args)
+    ResultCtrl.import(args)
   end
 end
 

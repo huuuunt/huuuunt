@@ -38,6 +38,18 @@ class ScheduleGooooalImportCmd < CmdParse::Command
   end
 end
 
+class ScheduleGooooalCheckResultCmd < CmdParse::Command
+  def initialize
+    super('check-result', false)
+    self.short_desc = "校验已完场的赛事是否在赛果数据表中存在"
+    self.description = "校验已完场的赛事是否在赛果数据表中存在，以确保赛事名称、球队名称在赛果表和赛程表中统一"
+  end
+
+  def execute(args)
+    ScheduleGooooalCtrl.check_result(args)
+  end
+end
+
 class ScheduleGooooalUpdatePreprocessCmd < CmdParse::Command
     def initialize
     super('update-preprocess', false)

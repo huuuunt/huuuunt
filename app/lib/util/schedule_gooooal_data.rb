@@ -230,6 +230,21 @@ puts "#{match_id}, #{phase_id},#{match_date},#{match_time},#{season},#{team1_id}
       Schedule.import(schedule) if schedule.size > 0
     end #function
 
+    def check_schedule_in_result(season, match_set)
+      match_set.each do |match_id|
+        puts "#{Match.get_match_name_by_id(match_id)}"
+        # 获取指定赛季指定赛事的所有已完场的赛程数据
+        schedules = Schedule.get_schedules_by_season_match(season, match_id)
+        return unless schedules
+        schedules.each do |schedule|
+            Result.schedule_exist?(season, schedule.matchdt, schedule.matchno,
+                                  schedule.team1no, schedule.team2no, schedule.halfgoal1,
+                                  schedule.halfgoal2, schedule.goal1, schedule.goal2)
+        end
+        #exit
+      end
+    end
+
   end
 end
 

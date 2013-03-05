@@ -69,6 +69,27 @@ class Match < ActiveRecord::Base
 #  end
 
   class << self
+    def get_season_type(season, match_id)
+      curr_year = Time.new.year
+      match = where("match_id=#{match_id}")
+      return -1 unless match
+      match = match.first
+      # 如果没有season变化的记录，则直接返回
+      return match.season_type.to_i unless match.season_change
+      # 否则需要判断
+      season_type = match.season_type.to_i
+      season_change_year, season_change_type = match.season_change.split(':')
+      
+      curr_year.downto(2003) do |year|
+        if year == season_change_year.to_i
+          season_type = season_change_type.to_i
+        end
+        return season_type if year == season.to_i
+      end
+
+      return -1
+    end
+
     def get_country_name
       find_by_sql("SELECT m.id, m.match_id, m.name_cn match_name, m.country_id, c.name_cn country_name
                              FROM #{$tab['match']} m
@@ -112,6 +133,10 @@ class Match < ActiveRecord::Base
 
     def get_phases(match_id)
       @@match_need_stat[match_id.to_i]['phases']
+    end
+
+    def get_teams(match_id)
+      find_by_sql("select teams from #{$tab['match']} where match_id=#{match_id}").first.teams
     end
 
     def get_gooooal_phases(season, match_id)
@@ -171,7 +196,8 @@ class Match < ActiveRecord::Base
       match_name_arr.each do |name|
         next if match_unique.include?(name)
         match_unique << name
-        $logger.warn("insert new match name : #{name}")
+        #$logger.warn("insert new match name : #{name}")
+        puts "insert new match name : #{name}"
 
         match_infos << Match.new(:match_id => id+index+1,
                                :name_cn => name,

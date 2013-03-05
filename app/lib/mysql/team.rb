@@ -87,7 +87,8 @@ class Team < ActiveRecord::Base
       team_name_arr.each do |item|
         next if team_unique.include?(item['team_name'])
         team_unique << item['team_name']
-        $logger.warn("insert new team name : #{item['team_name']}, #{Match.match_id_map[item['match_id'].to_i]['name']}")
+        #$logger.warn("insert new team name : #{item['team_name']}, #{Match.match_id_map[item['match_id'].to_i]['name']}")
+        puts "insert new team name : #{item['team_name']}, #{Match.match_id_map[item['match_id'].to_i]['name']}"
 
         team_infos << Team.new(:team_id => id+index+1,
                                    :name_cn => item['team_name'],

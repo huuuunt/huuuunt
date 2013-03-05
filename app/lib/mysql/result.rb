@@ -49,5 +49,31 @@ class Result < ActiveRecord::Base
       r.save
     end
   end
+
+  def self.schedule_exist?(season, matchdt, matchno, team1no, team2no, halfgoal1, halfgoal2, goal1, goal2)
+    match_season_type = Match.get_season_type(season, matchno)
+    #puts "#{match_season_type}"
+
+    if match_season_type == 1
+      start_date = "#{season}-07-01"
+      end_date = "#{season.to_i+1}-06-30"
+    else
+      start_date = "#{season}-01-01"
+      end_date = "#{season}-12-31"
+    end
+
+    #puts "#{start_date}, #{end_date}"
+    
+    result = where("matchdt>=\"#{start_date}\" and matchdt<=\"#{end_date}\" and matchno=#{matchno} and team1no=#{team1no} and team2no=#{team2no}")
+    if result.size==0
+      puts "#{season}, #{matchdt}, #{matchno}, #{team1no}, #{team2no}, #{Match.get_match_name_by_id(matchno)}, #{Team.get_team_name_by_id(team1no)}, #{Team.get_team_name_by_id(team2no)}"
+      return
+    end
+    result = result.first
+    if result.halfgoal1==halfgoal1 and result.halfgoal2==halfgoal2 and result.goal1==goal1 and result.goal2==goal2
+    else
+      puts "#{season}, #{matchdt}, #{matchno}, #{team1no}, #{team2no}, #{Match.get_match_name_by_id(matchno)}, #{Team.get_team_name_by_id(team1no)}, #{Team.get_team_name_by_id(team2no)}"
+    end
+  end
   
 end
