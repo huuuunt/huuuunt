@@ -1,3 +1,4 @@
+# encoding: utf-8
 # 亚洲赔率数据处理CMD
 
 require 'rubygems'

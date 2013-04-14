@@ -1,4 +1,5 @@
-# 联赛积分数据处理CMD
+# encoding: utf-8
+# # 联赛积分数据处理CMD
 
 require 'rubygems'
 require 'cmdparse'

@@ -1,4 +1,5 @@
-# 赛果数据处理CMD
+# encoding: utf-8
+# # 赛果数据处理CMD
 
 require 'rubygems'
 require 'cmdparse'

@@ -1,4 +1,4 @@
-
+# encoding: utf-8
 require 'mysql/match'
 require 'mysql/team'
 
@@ -239,13 +239,12 @@ module Huuuunt
 
         status, goal1, goal2, halfgoal1, halfgoal2 = goal.split(',')
         status = status.to_i
-        
-        direction = case direction.to_i
-                    when 1: 1
-                    when 2: -1
-                    else
 
-                    end
+        if direction.to_i == 1
+          direction = 1
+        elsif direction.to_i == 2
+          direction = -1
+        end
 
         peilv_arr = peilv.split(';')
 

@@ -1,6 +1,7 @@
-# 赛事名称等数据处理CMD
+# encoding: utf-8
+# # 赛事名称等数据处理CMD
 
-require 'rubygems'
+#require 'rubygems'
 require 'cmdparse'
 
 require 'function/match_ctrl'

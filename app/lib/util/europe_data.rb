@@ -1,4 +1,4 @@
-
+# encoding: utf-8
 require 'mysql/match'
 require 'mysql/team'
 

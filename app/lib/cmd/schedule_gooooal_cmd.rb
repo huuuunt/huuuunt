@@ -1,4 +1,5 @@
-# 从Gooooal获取的赛程数据处理CMD
+# encoding: utf-8
+# # 从Gooooal获取的赛程数据处理CMD
 
 require 'rubygems'
 require 'cmdparse'

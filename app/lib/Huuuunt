@@ -1,4 +1,5 @@
-#!/usr/bin/ruby
+#!/usr/bin/env ruby
+# encoding: utf-8
 
 # 主程序入口
 
@@ -23,8 +24,8 @@
 # require文件加载路径设置 #
 ########################
 $LOAD_PATH.unshift(File.dirname(File.expand_path("./", __FILE__)))
+$LOAD_PATH.unshift("/home/liuf/.rvm/gems/ruby-1.9.3-p392/gems")
 
-require 'rubygems'
 require 'cmdparse'
 #require 'net/http'
 #require 'iconv'
@@ -58,31 +59,34 @@ cmd.add_command(CmdParse::VersionCommand.new)
 
 # 所有命令列表
 commands = {
-  "MatchCmd" => ["MatchImportCmd", "MatchExportCmd", "MatchCheckCmd"],
-  "TeamCmd" => ["TeamImportCmd", "TeamExportCmd", "TeamCheckCmd"],
-  "ResultCmd" => ["ResultDownloadCmd", "ResultPreprocessCmd", "ResultImportCmd"],
-  "EuropeCmd" => ["EuropeDownloadCmd", "EuropePreprocessCmd", "EuropeCheckResultCmd", "EuropeImportCmd"],
-  "AsiaCmd" => ["AsiaDownloadCmd", "AsiaPreprocessCmd", "AsiaCheckResultCmd", "AsiaImportCmd"],
-  "ScheduleCmd" => ["ScheduleDownloadCmd", "SchedulePreprocessCmd", "ScheduleImportCmd", "ScheduleUpdateCmd"],
+  MatchCmd => [MatchImportCmd, MatchExportCmd, MatchCheckCmd],
+  TeamCmd => [TeamImportCmd, TeamExportCmd, TeamCheckCmd],
+  ResultCmd => [ResultDownloadCmd, ResultPreprocessCmd, ResultImportCmd],
+  EuropeCmd => [EuropeDownloadCmd, EuropePreprocessCmd, EuropeCheckResultCmd, EuropeImportCmd],
+  AsiaCmd => [AsiaDownloadCmd, AsiaPreprocessCmd, AsiaCheckResultCmd, AsiaImportCmd],
+  ScheduleCmd => [ScheduleDownloadCmd, SchedulePreprocessCmd, ScheduleImportCmd, ScheduleUpdateCmd],
   # Huuuunt schedule-gooooal preprocess 2007 1 2 4
   # Huuuunt schedule-gooooal import 2007 1 2 4
-  "ScheduleGooooalCmd" => ["ScheduleGooooalPreprocessCmd", "ScheduleGooooalImportCmd", "ScheduleGooooalCheckResultCmd", "ScheduleGooooalUpdatePreprocessCmd", "ScheduleGooooalUpdateCmd"],
+  ScheduleGooooalCmd => [ScheduleGooooalPreprocessCmd, ScheduleGooooalImportCmd, ScheduleGooooalCheckResultCmd, ScheduleGooooalUpdatePreprocessCmd, ScheduleGooooalUpdateCmd],
   # Huuuunt score calc  2007 1 2 4
   # Huuuunt score calc  2007
-  "ScoreCmd" => ["ScoreCalcCmd", "ScoreCheckCmd", "SoreAsiaCalcCmd", "ScoreAsiaCheckCmd"],
-  "RankCmd" => ["RankCalcBaseCmd", "RankCalcHistoryCmd"]
+  ScoreCmd => [ScoreCalcCmd, ScoreCheckCmd, SoreAsiaCalcCmd, ScoreAsiaCheckCmd],
+  RankCmd => [RankCalcBaseCmd, RankCalcHistoryCmd]
 }
 
 commands.each do |m_cmd, s_cmds|
   src = <<-END_SRC
     new_cmd = #{m_cmd}.new
+    #{s_cmds}.each do |s_cmd|
+      new_cmd.add_command(s_cmd.new)
+    end
     cmd.add_command(new_cmd)
   END_SRC
   eval src
-  s_cmds.each do |s_cmd|
-    src = "new_cmd.add_command(#{s_cmd}.new)"
-    eval src
-  end
+  #s_cmds.each do |s_cmd|
+  #  src = "new_cmd.add_command(#{s_cmd}.new)"
+  #  eval src
+  #end
 end
 
 ## 赛事名称等数据处理CMD

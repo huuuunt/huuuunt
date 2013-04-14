@@ -1,3 +1,4 @@
+# encoding: utf-8
 # 欧洲赔率数据导入程序
 
 require 'mysql/europe'

@@ -1,3 +1,4 @@
+# encoding: utf-8
 # 赛程数据导入程序
 
 require 'json'

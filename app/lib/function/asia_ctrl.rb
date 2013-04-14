@@ -1,3 +1,4 @@
+# encoding: utf-8
 # 亚洲赔率数据导入程序
 
 require 'mysql/asia'

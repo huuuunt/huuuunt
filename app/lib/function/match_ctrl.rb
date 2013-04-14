@@ -1,3 +1,4 @@
+# encoding: utf-8
 # 赛事名称等数据导入导出处理程序
 
 require 'rubygems'

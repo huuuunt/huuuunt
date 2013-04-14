@@ -1,4 +1,5 @@
-# 欧洲赔率数据处理CMD
+# encoding: utf-8
+# # 欧洲赔率数据处理CMD
 
 require 'rubygems'
 require 'cmdparse'

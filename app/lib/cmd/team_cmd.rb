@@ -1,4 +1,5 @@
-# 球队名称等数据处理CMD
+# encoding: utf-8
+# # 球队名称等数据处理CMD
 
 require 'rubygems'
 require 'cmdparse'

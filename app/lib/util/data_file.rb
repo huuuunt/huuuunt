@@ -1,4 +1,4 @@
-
+# encoding: utf-8
 module Huuuunt
   module DataFile
     def self.included(base)
