@@ -58,7 +58,7 @@ class ResultCtrl
     end_date = now_date("Date")
 
     #start_date = Date.parse("2012-09-16")
-    end_date = Date.parse("2011-06-30")
+    #end_date = Date.parse("2011-10-30")
 
     while start_date <= end_date
       #$logger.debug("Result date : #{start_date.to_s}")

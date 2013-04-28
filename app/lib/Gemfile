@@ -1,0 +1,13 @@
+source 'https://rubygems.org'
+
+gem 'cmdparse'
+gem 'spreadsheet'
+gem 'activerecord'
+gem 'activerecord-import'
+gem 'activerecord-mysql2-adapter'
+gem 'hpricot'
+gem 'libxml-ruby'
+gem 'json'
+gem 'log4r'
+
+

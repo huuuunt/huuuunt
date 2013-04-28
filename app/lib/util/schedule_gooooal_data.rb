@@ -173,7 +173,7 @@ puts "#{match_id}, #{phase_id},#{match_date},#{match_time},#{season},#{team1_id}
       new_teams_insert = []
       new_finrates = []
       schedule_match_phase_loop(season, match_set) do |match_id, gooooal_match_id, phase_id|
-        continue unless schedule_data_file_exist?(season, gooooal_match_id, phase_id, path)
+        next unless schedule_data_file_exist?(season, gooooal_match_id, phase_id, path)
         do_preprocess_team(season, match_id, gooooal_match_id, phase_id, path, new_teams, new_teams_insert, new_finrates)
       end
 
@@ -212,7 +212,7 @@ puts "#{match_id}, #{phase_id},#{match_date},#{match_time},#{season},#{team1_id}
       new_finrates = []
       schedule_update_loop(data) do |match_id, gooooal_match_id, phase_id|
         #puts "#{season}, #{match_id}, #{gooooal_match_id}, #{phase_id}"
-        continue unless schedule_data_file_exist?(season, gooooal_match_id, phase_id, path)
+        next unless schedule_data_file_exist?(season, gooooal_match_id, phase_id, path)
         do_preprocess_team(season, match_id, gooooal_match_id, phase_id, path, new_teams, new_teams_insert, new_finrates)
       end
 

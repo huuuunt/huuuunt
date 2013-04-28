@@ -9,3 +9,5 @@ app/lib/log/
 app/lib/old/
 extension/server/gooooal/
 extension/server/nbproject/
+app/.idea/
+extension/.idea/

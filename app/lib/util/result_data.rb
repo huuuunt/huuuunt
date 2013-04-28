@@ -78,8 +78,8 @@ module Huuuunt
 
       begin
         # 代理服务器设置
-        #result_data = Net::HTTP::Proxy('192.168.21.2', 80).get(URI.parse(result_url))
-        result_data = Net::HTTP.get(URI.parse(result_url))
+        result_data = Net::HTTP::Proxy('192.168.13.19', 7777).get(URI.parse(result_url))
+        #result_data = Net::HTTP.get(URI.parse(result_url))
       rescue Exception=>ex
         #$logger.error("#{path} download failed! #{ex}")
       end

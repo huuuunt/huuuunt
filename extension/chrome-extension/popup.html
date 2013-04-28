@@ -1,0 +1,75 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <script type="text/javascript" src="jquery.min.js"></script>
+    <script type="text/javascript" src="jquery.cookie.js"></script>
+    <script type="text/javascript" src="popup.js"></script>
+
+    <link href="bootstrap.min.css" media="all" rel="stylesheet" type="text/css" />
+  </head>
+  <body>
+    <div>
+        <!-- 展示联赛赛季列表，用于获取指定联赛指定赛季的赛程数据 -->
+        <input type="button" value="获取联赛赛季列表[全]" id="schedule"/>
+        <br/>
+        <!-- 更新近期刚比赛完成的赛程赛果数据 -->
+        <input type="button" value="更新赛程赛果数据[2012-2013]" id="update_schedule_1" />
+        <input type="button" value="检测赛程赛果数据[2012-2013]" id="check_update_schedule_1" />
+        <br/>
+        <input type="button" value="更新赛程赛果数据[2013]" id="update_schedule_2" />
+        <input type="button" value="检测赛程赛果数据[2013]" id="check_update_schedule_2" />
+        <br/>
+        <!-- 使用cookie，控制每次打开的赛果页面数在15个页面以下，下次更新时，自动从下一个开始。 -->
+        <input type="button" value="重置cookie" id="cookie_reset" />
+    </div>
+
+    <br />
+
+    <div id="match" style="width:800px">
+        英超<input id="match_id_004_38" class="btn btn-success" type="button" value="2013" onclick="checkAndOpenSchedule(4, 2013, 38)">&nbsp; &nbsp; &nbsp;
+        英冠<input id="match_id_021_46" class="btn btn-success" type="button" value="2013" onclick="checkAndOpenSchedule(21, 2013, 46)">&nbsp; &nbsp; &nbsp;
+        英甲<input id="match_id_022_46" class="btn btn-success" type="button" value="2013" onclick="checkAndOpenSchedule(22, 2013, 46)">&nbsp; &nbsp; &nbsp;
+        意甲<input id="match_id_001_38" class="btn btn-success" type="button" value="2013" onclick="checkAndOpenSchedule(1, 2013, 38)">&nbsp; &nbsp; &nbsp;
+        意乙<input id="match_id_020_42" class="btn btn-success" type="button" value="2013" onclick="checkAndOpenSchedule(20, 2013, 42)"><br>
+        西甲<input id="match_id_002_38" class="btn btn-success" type="button" value="2013" onclick="checkAndOpenSchedule(2, 2013, 38)">&nbsp; &nbsp; &nbsp;
+        西乙<input id="match_id_031_42" class="btn btn-success" type="button" value="2013" onclick="checkAndOpenSchedule(31, 2013, 42)">&nbsp; &nbsp; &nbsp;
+        德甲<input id="match_id_003_34" class="btn btn-success" type="button" value="2013" onclick="checkAndOpenSchedule(3, 2013, 34)">&nbsp; &nbsp; &nbsp;
+        德乙<input id="match_id_017_34" class="btn btn-success" type="button" value="2013" onclick="checkAndOpenSchedule(17, 2013, 34)">&nbsp; &nbsp; &nbsp;
+        法甲<input id="match_id_005_38" class="btn btn-success" type="button" value="2013" onclick="checkAndOpenSchedule(5, 2013, 38)"><br>
+        法乙<input id="match_id_070_38" class="btn btn-success" type="button" value="2013" onclick="checkAndOpenSchedule(70, 2013, 38)">&nbsp; &nbsp; &nbsp;
+        葡超<input id="match_id_030_30" class="btn btn-success" type="button" value="2013" onclick="checkAndOpenSchedule(30, 2013, 30)">&nbsp; &nbsp; &nbsp;
+        葡甲<input id="match_id_089_42" class="btn btn-success" type="button" value="2013" onclick="checkAndOpenSchedule(89, 2013, 42)">&nbsp; &nbsp; &nbsp;
+        苏超<input id="match_id_012_38" class="btn btn-success" type="button" value="2013" onclick="checkAndOpenSchedule(12, 2013, 38)">&nbsp; &nbsp; &nbsp;
+        苏甲<input id="match_id_081_36" class="btn btn-success" type="button" value="2013" onclick="checkAndOpenSchedule(81, 2013, 36)"><br>
+        荷甲<input id="match_id_006_34" class="btn btn-success" type="button" value="2013" onclick="checkAndOpenSchedule(6, 2013, 34)">&nbsp; &nbsp; &nbsp;
+        荷乙<input id="match_id_113_34" class="btn btn-success" type="button" value="2013" onclick="checkAndOpenSchedule(113, 2013, 34)">&nbsp; &nbsp; &nbsp;
+        比甲<input id="match_id_033_30" class="btn btn-success" type="button" value="2013" onclick="checkAndOpenSchedule(33, 2013, 30)">&nbsp; &nbsp; &nbsp;
+        比乙<input id="match_id_078_34" class="btn btn-success" type="button" value="2013" onclick="checkAndOpenSchedule(78, 2013, 34)">&nbsp; &nbsp; &nbsp;
+        瑞典超<input id="match_id_034_30" class="btn btn-primary" type="button" value="2013" onclick="checkAndOpenSchedule(34, 2013, 30)"><br>
+        瑞典甲<input id="match_id_435_30" class="btn btn-primary" type="button" value="2013" onclick="checkAndOpenSchedule(435, 2013, 30)">&nbsp; &nbsp; &nbsp;
+        芬超<input id="match_id_037_33" class="btn btn-primary" type="button" value="2013" onclick="checkAndOpenSchedule(37, 2013, 33)">&nbsp; &nbsp; &nbsp;
+        芬甲<input id="match_id_441_27" class="btn btn-primary" type="button" value="2013" onclick="checkAndOpenSchedule(441, 2013, 27)">&nbsp; &nbsp; &nbsp;
+        挪超<input id="match_id_035_30" class="btn btn-primary" type="button" value="2013" onclick="checkAndOpenSchedule(35, 2013, 30)">&nbsp; &nbsp; &nbsp;
+        挪甲<input id="match_id_438_30" class="btn btn-primary" type="button" value="2013" onclick="checkAndOpenSchedule(438, 2013, 30)"><br>
+        丹麦超<input id="match_id_051_33" class="btn btn-success" type="button" value="2013" onclick="checkAndOpenSchedule(51, 2013, 33)">&nbsp; &nbsp; &nbsp;
+        丹麦甲<input id="match_id_440_30" class="btn btn-success" type="button" value="2013" onclick="checkAndOpenSchedule(440, 2013, 30)">&nbsp; &nbsp; &nbsp;
+        奥甲<input id="match_id_052_36" class="btn btn-success" type="button" value="2013" onclick="checkAndOpenSchedule(52, 2013, 36)">&nbsp; &nbsp; &nbsp;
+        奥乙<input id="match_id_075_36" class="btn btn-success" type="button" value="2013" onclick="checkAndOpenSchedule(75, 2013, 36)">&nbsp; &nbsp; &nbsp;
+        瑞士超<input id="match_id_050_36" class="btn btn-success" type="button" value="2013" onclick="checkAndOpenSchedule(50, 2013, 36)"><br>
+        瑞士甲<input id="match_id_084_36" class="btn btn-success" type="button" value="2013" onclick="checkAndOpenSchedule(84, 2013, 36)">&nbsp; &nbsp; &nbsp;
+        俄超<input id="match_id_055_30" class="btn btn-success" type="button" value="2013" onclick="checkAndOpenSchedule(55, 2013, 30)">&nbsp; &nbsp; &nbsp;
+        俄甲<input id="match_id_469_34" class="btn btn-success" type="button" value="2013" onclick="checkAndOpenSchedule(469, 2013, 34)">&nbsp; &nbsp; &nbsp;
+        波兰甲<input id="match_id_067_30" class="btn btn-success" type="button" value="2013" onclick="checkAndOpenSchedule(67, 2013, 30)">&nbsp; &nbsp; &nbsp;
+        波兰乙<input id="match_id_436_34" class="btn btn-success" type="button" value="2013" onclick="checkAndOpenSchedule(436, 2013, 34)"><br>
+        罗甲<input id="match_id_068_34" class="btn btn-success" type="button" value="2013" onclick="checkAndOpenSchedule(68, 2013, 34)">&nbsp; &nbsp; &nbsp;
+        土超<input id="match_id_054_34" class="btn btn-success" type="button" value="2013" onclick="checkAndOpenSchedule(54, 2013, 34)">&nbsp; &nbsp; &nbsp;
+        土甲<input id="match_id_461_34" class="btn btn-success" type="button" value="2013" onclick="checkAndOpenSchedule(461, 2013, 34)">&nbsp; &nbsp; &nbsp;
+        巴西甲<input id="match_id_056_38" class="btn btn-primary" type="button" value="2013" onclick="checkAndOpenSchedule(56, 2013, 38)">&nbsp; &nbsp; &nbsp;
+        巴西乙<input id="match_id_564_38" class="btn btn-primary" type="button" value="2013" onclick="checkAndOpenSchedule(564, 2013, 38)"><br>
+        日职联<input id="match_id_138_34" class="btn btn-primary" type="button" value="2013" onclick="checkAndOpenSchedule(138, 2013, 34)">&nbsp; &nbsp; &nbsp;
+        日职乙<input id="match_id_533_42" class="btn btn-primary" type="button" value="2013" onclick="checkAndOpenSchedule(533, 2013, 42)">&nbsp; &nbsp; &nbsp;
+    </div>
+  </body>
+</html>

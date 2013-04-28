@@ -144,7 +144,7 @@ module Huuuunt
       
       schedule_match_phase_loop(season, match_set) do |new_season, match_id, bet007_match_id, phase_id|
         # 如果当前轮次的数据已经存在，则不再下载
-        continue if schedule_data_file_exist?(new_season, match_id, phase_id, path, 'htm')
+        next if schedule_data_file_exist?(new_season, match_id, phase_id, path, 'htm')
 
         # 下载数据
         schedule_url = "http://info.bet007.com/league_match/league_vs/#{new_season}/#{bet007_match_id}_#{phase_id}.htm"
@@ -177,7 +177,7 @@ module Huuuunt
     def preprocess_team(season, match_set, path)
       new_teams = []
       schedule_match_phase_loop(season, match_set) do |new_season, match_id, bet007_match_id, phase_id|
-        continue unless schedule_data_file_exist?(new_season, match_id, phase_id, path, 'csv')
+        next unless schedule_data_file_exist?(new_season, match_id, phase_id, path, 'csv')
         schedule_csv_path = schedule_data_file(new_season, match_id, phase_id, path, 'csv')
         File.open(schedule_csv_path, "r") do |f|
           until f.eof?
@@ -204,7 +204,7 @@ module Huuuunt
     def insert_schedule(csv_file)
       schedule = []
       schedule_match_phase_loop(season, match_set) do |new_season, match_id, bet007_match_id, phase_id|
-        continue unless schedule_data_file_exist?(new_season, match_id, phase_id, path, 'csv')
+        next unless schedule_data_file_exist?(new_season, match_id, phase_id, path, 'csv')
         schedule_csv_path = schedule_data_file(new_season, match_id, phase_id, path, 'csv')
         File.open(schedule_csv_path, "r") do |f|
           until f.eof?
