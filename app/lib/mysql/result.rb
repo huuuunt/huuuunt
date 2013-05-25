@@ -51,29 +51,39 @@ class Result < ActiveRecord::Base
   end
 
   def self.schedule_exist?(season, matchdt, matchno, team1no, team2no, halfgoal1, halfgoal2, goal1, goal2)
-    match_season_type = Match.get_season_type(season, matchno)
-    #puts "#{match_season_type}"
+    #match_season_type = Match.get_season_type(season, matchno)
+    ##puts "#{match_season_type}"
+    #
+    #if match_season_type == 1
+    #  start_date = "#{season}-07-01"
+    #  end_date = "#{season.to_i+1}-06-30"
+    #else
+    #  start_date = "#{season}-01-01"
+    #  end_date = "#{season}-12-31"
+    #end
 
-    if match_season_type == 1
-      start_date = "#{season}-07-01"
-      end_date = "#{season.to_i+1}-06-30"
-    else
-      start_date = "#{season}-01-01"
-      end_date = "#{season}-12-31"
-    end
+    match_date = matchdt.strftime('%Y-%m-%d')
+    start_match_datetime = (Date.parse(match_date)-1).strftime('%Y-%m-%d') + " 00:00:00"
+    end_match_datetime = (Date.parse(match_date)+1).strftime('%Y-%m-%d') + " 23:59:59"
 
-    #puts "#{start_date}, #{end_date}"
+    #puts "#{start_match_datetime}, #{end_match_datetime}"
     
-    result = where("matchdt>=\"#{start_date}\" and matchdt<=\"#{end_date}\" and matchno=#{matchno} and team1no=#{team1no} and team2no=#{team2no}")
+    result = where("matchdt>\"#{start_match_datetime}\" and matchdt<\"#{end_match_datetime}\" and matchno=#{matchno} and team1no=#{team1no} and team2no=#{team2no}")
     if result.size==0
-      puts "#{season}, #{matchdt}, #{matchno}, #{team1no}, #{team2no}, #{Match.get_match_name_by_id(matchno)}, #{Team.get_team_name_by_id(team1no)}, #{Team.get_team_name_by_id(team2no)}"
+      puts "NO ITEM : #{season}, #{matchdt.strftime('%Y-%m-%d %H:%M:%S')}, #{matchno}, #{team1no}, #{team2no}, #{Match.get_match_name_by_id(matchno)}, #{Team.get_team_name_by_id(team1no)}, #{Team.get_team_name_by_id(team2no)}"
       return
     end
     result = result.first
-    if result.halfgoal1==halfgoal1 and result.halfgoal2==halfgoal2 and result.goal1==goal1 and result.goal2==goal2
+    if result.goal1==goal1 and result.goal2==goal2
     else
-      puts "#{season}, #{matchdt}, #{matchno}, #{team1no}, #{team2no}, #{Match.get_match_name_by_id(matchno)}, #{Team.get_team_name_by_id(team1no)}, #{Team.get_team_name_by_id(team2no)}"
+      #puts "#{result.matchdt.strftime('%Y-%m-%d %H:%M:%S')},#{result.matchno},#{result.team1no},#{result.team2no},#{result.goal1},#{result.goal2},#{result.halfgoal1},#{result.halfgoal2}"
+      puts "GOAL NOT CORRECT : #{season}, #{matchdt.strftime('%Y-%m-%d %H:%M:%S')}, #{matchno}, #{team1no}, #{team2no}, #{Match.get_match_name_by_id(matchno)}, #{Team.get_team_name_by_id(team1no)}, #{Team.get_team_name_by_id(team2no)}, [#{result.goal1} vs #{goal1}, #{result.goal2} vs #{goal2}]"
     end
-  end
+    if result.halfgoal1==halfgoal1 and result.halfgoal2==halfgoal2
+    else
+      puts "HALF GOAL NOT CORRECT : #{season}, #{matchdt.strftime('%Y-%m-%d %H:%M:%S')}, #{matchno}, #{team1no}, #{team2no}, #{Match.get_match_name_by_id(matchno)}, #{Team.get_team_name_by_id(team1no)}, #{Team.get_team_name_by_id(team2no)}, , [#{result.halfgoal1} vs #{halfgoal1}, #{result.halfgoal2} vs #{halfgoal2}]"
+    end
+
+    end
   
 end

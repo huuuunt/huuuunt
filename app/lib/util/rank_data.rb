@@ -48,9 +48,9 @@ module Huuuunt
           team_id = teamno.team1no.to_i
           # puts team_id
           # 初始化数值标识：积分、进球数、净球数、失球数、赢场次数、平场次数、输场次数、已赛次数、轮次
-          h_home[team_id] = [0,0,0,0,0,0,0,0,0]
-          h_away[team_id] = [0,0,0,0,0,0,0,0,0]
-          scores[team_id] = [0,0,0,0,0,0,0,0,0]
+          h_home[team_id] = { 'score' => 0, 'wingoal' => 0, 'goal' => 0, 'lossgoal' => 0, 'wincnt' => 0, 'deucecnt' => 0, 'losscnt' => 0, 'matchcnt' => 0, 'phase' => 0 }
+          h_away[team_id] = { 'score' => 0, 'wingoal' => 0, 'goal' => 0, 'lossgoal' => 0, 'wincnt' => 0, 'deucecnt' => 0, 'losscnt' => 0, 'matchcnt' => 0, 'phase' => 0 }
+          scores[team_id] = { 'score' => 0, 'wingoal' => 0, 'goal' => 0, 'lossgoal' => 0, 'wincnt' => 0, 'deucecnt' => 0, 'losscnt' => 0, 'matchcnt' => 0, 'phase' => 0 }
         end
 
         # 从赛程中读取出已经完成的比赛
@@ -65,14 +65,15 @@ module Huuuunt
           
           phase = item.phase.to_i
 
-          result1 = 0
-          result2 = 0
+          #result1 = 0
+          #result2 = 0
           wincnt1 = 0
           wincnt2 = 0
           deucecnt1 = 0
           deucecnt2 = 0
           losscnt1 = 0
           losscnt2 = 0
+
           if goal1 > goal2
             result1 = 3
             result2 = 0
@@ -96,14 +97,14 @@ module Huuuunt
 
           # 统计主场球队数据
           if h_home.has_key?(team1no)
-            h_home[team1no][0] = h_home[team1no][0] + result1         # 积分
-            h_home[team1no][1] = h_home[team1no][1] + goal1           # 进球数
-            h_home[team1no][2] = h_home[team1no][2] + goal1-goal2     # 净球数
-            h_home[team1no][3] = h_home[team1no][3] + goal2           # 失球数
-            h_home[team1no][4] = h_home[team1no][4] + wincnt1         # 赢场次数
-            h_home[team1no][5] = h_home[team1no][5] + deucecnt1       # 平场次数
-            h_home[team1no][6] = h_home[team1no][6] + losscnt1        # 输场次数
-            h_home[team1no][7] = h_home[team1no][7] + 1               # 已赛场次
+            h_home[team1no]['score'] = h_home[team1no]['score'] + result1         # 积分
+            h_home[team1no]['wingoal'] = h_home[team1no]['wingoal'] + goal1           # 进球数
+            h_home[team1no]['goal'] = h_home[team1no]['goal'] + goal1-goal2     # 净球数
+            h_home[team1no]['lossgoal'] = h_home[team1no]['lossgoal'] + goal2           # 失球数
+            h_home[team1no]['wincnt'] = h_home[team1no]['wincnt'] + wincnt1         # 赢场次数
+            h_home[team1no]['deucecnt'] = h_home[team1no]['deucecnt'] + deucecnt1       # 平场次数
+            h_home[team1no]['losscnt'] = h_home[team1no]['losscnt'] + losscnt1        # 输场次数
+            h_home[team1no]['matchcnt'] = h_home[team1no]['matchcnt'] + 1               # 已赛场次
           else
             puts "#{team1no} has error!"
             #h_home[team1no] = [result1, goal1, goal1-goal2, wincnt1, deucecnt1, losscnt1, 1]
@@ -111,14 +112,14 @@ module Huuuunt
 
           # 统计客场球队数据
           if h_away.has_key?(team2no)
-            h_away[team2no][0] = h_away[team2no][0] + result2         # 积分
-            h_away[team2no][1] = h_away[team2no][1] + goal2           # 进球数
-            h_away[team2no][2] = h_away[team2no][2] + goal2-goal1     # 净球数
-            h_away[team2no][3] = h_away[team2no][3] + goal1           # 失球数
-            h_away[team2no][4] = h_away[team2no][4] + wincnt2         # 赢场次数
-            h_away[team2no][5] = h_away[team2no][5] + deucecnt2       # 平场次数
-            h_away[team2no][6] = h_away[team2no][6] + losscnt2        # 输场次数
-            h_away[team2no][7] = h_away[team2no][7] + 1               # 已赛场次
+            h_away[team2no]['score'] = h_away[team2no]['score'] + result2         # 积分
+            h_away[team2no]['wingoal'] = h_away[team2no]['wingoal'] + goal2           # 进球数
+            h_away[team2no]['goal'] = h_away[team2no]['goal'] + goal2-goal1     # 净球数
+            h_away[team2no]['lossgoal'] = h_away[team2no]['lossgoal'] + goal1           # 失球数
+            h_away[team2no]['wincnt'] = h_away[team2no]['wincnt'] + wincnt2         # 赢场次数
+            h_away[team2no]['deucecnt'] = h_away[team2no]['deucecnt'] + deucecnt2       # 平场次数
+            h_away[team2no]['losscnt'] = h_away[team2no]['losscnt'] + losscnt2        # 输场次数
+            h_away[team2no]['matchcnt'] = h_away[team2no]['matchcnt'] + 1               # 已赛场次
           else
             puts "#{team2no} has error!"
             #h_away[team2no] = [result2, goal2, goal2-goal1, wincnt2, deucecnt2, losscnt2, 1]
@@ -126,40 +127,40 @@ module Huuuunt
 
           # 将主场数据加入总场次统计数据中
           if scores.has_key?(team1no)
-            scores[team1no][0] = scores[team1no][0] + result1
-            scores[team1no][1] = scores[team1no][1] + goal1
-            scores[team1no][2] = scores[team1no][2] + goal1-goal2
-            scores[team1no][3] = scores[team1no][3] + goal2
-            scores[team1no][4] = scores[team1no][4] + wincnt1
-            scores[team1no][5] = scores[team1no][5] + deucecnt1
-            scores[team1no][6] = scores[team1no][6] + losscnt1
-            scores[team1no][7] = scores[team1no][7] + 1
-            #puts "#{scores[team1no][0]}, #{result1}" if team1no==1
+            scores[team1no]['score'] = scores[team1no]['score'] + result1
+            scores[team1no]['wingoal'] = scores[team1no]['wingoal'] + goal1
+            scores[team1no]['goal'] = scores[team1no]['goal'] + goal1-goal2
+            scores[team1no]['lossgoal'] = scores[team1no]['lossgoal'] + goal2
+            scores[team1no]['wincnt'] = scores[team1no]['wincnt'] + wincnt1
+            scores[team1no]['deucecnt'] = scores[team1no]['deucecnt'] + deucecnt1
+            scores[team1no]['losscnt'] = scores[team1no]['losscnt'] + losscnt1
+            scores[team1no]['matchcnt'] = scores[team1no]['matchcnt'] + 1
+            #puts "#{scores[team1no]['score']}, #{result1}" if team1no==1
           end
 
           # 将客场数据加入总场次统计数据中
           if scores.has_key?(team2no)
-            scores[team2no][0] = scores[team2no][0] + result2
-            scores[team2no][1] = scores[team2no][1] + goal2
-            scores[team2no][2] = scores[team2no][2] + goal2-goal1
-            scores[team2no][3] = scores[team2no][3] + goal1
-            scores[team2no][4] = scores[team2no][4] + wincnt2
-            scores[team2no][5] = scores[team2no][5] + deucecnt2
-            scores[team2no][6] = scores[team2no][6] + losscnt2
-            scores[team2no][7] = scores[team2no][7] + 1
-            #puts "#{scores[team2no][0]}, #{result2}" if team2no==1
+            scores[team2no]['score'] = scores[team2no]['score'] + result2
+            scores[team2no]['wingoal'] = scores[team2no]['wingoal'] + goal2
+            scores[team2no]['goal'] = scores[team2no]['goal'] + goal2-goal1
+            scores[team2no]['lossgoal'] = scores[team2no]['lossgoal'] + goal1
+            scores[team2no]['wincnt'] = scores[team2no]['wincnt'] + wincnt2
+            scores[team2no]['deucecnt'] = scores[team2no]['deucecnt'] + deucecnt2
+            scores[team2no]['losscnt'] = scores[team2no]['losscnt'] + losscnt2
+            scores[team2no]['matchcnt'] = scores[team2no]['matchcnt'] + 1
+            #puts "#{scores[team2no]['score']}, #{result2}" if team2no==1
           end
 
           # 插入当前赛事后主队和客队的rank数据
           Rank.insert_or_update_all(match_id, season, team1no, phase, item.matchdt,
-            scores[team1no][0], scores[team1no][1], scores[team1no][2], scores[team1no][3], scores[team1no][4], scores[team1no][5], scores[team1no][6], scores[team1no][7],
-            h_home[team1no][0], h_home[team1no][1], h_home[team1no][2], h_home[team1no][3], h_home[team1no][4], h_home[team1no][5], h_home[team1no][6], h_home[team1no][7],
-            h_away[team1no][0], h_away[team1no][1], h_away[team1no][2], h_away[team1no][3], h_away[team1no][4], h_away[team1no][5], h_away[team1no][6], h_away[team1no][7]
+            scores[team1no]['score'], scores[team1no]['wingoal'], scores[team1no]['goal'], scores[team1no]['lossgoal'], scores[team1no]['wincnt'], scores[team1no]['deucecnt'], scores[team1no]['losscnt'], scores[team1no]['matchcnt'],
+            h_home[team1no]['score'], h_home[team1no]['wingoal'], h_home[team1no]['goal'], h_home[team1no]['lossgoal'], h_home[team1no]['wincnt'], h_home[team1no]['deucecnt'], h_home[team1no]['losscnt'], h_home[team1no]['matchcnt'],
+            h_away[team1no]['score'], h_away[team1no]['wingoal'], h_away[team1no]['goal'], h_away[team1no]['lossgoal'], h_away[team1no]['wincnt'], h_away[team1no]['deucecnt'], h_away[team1no]['losscnt'], h_away[team1no]['matchcnt']
           )
           Rank.insert_or_update_all(match_id, season, team2no, phase,item.matchdt,
-            scores[team2no][0], scores[team2no][1], scores[team2no][2], scores[team2no][3], scores[team2no][4], scores[team2no][5], scores[team2no][6], scores[team2no][7],
-            h_home[team2no][0], h_home[team2no][1], h_home[team2no][2], h_home[team2no][3], h_home[team2no][4], h_home[team2no][5], h_home[team2no][6], h_home[team2no][7],
-            h_away[team2no][0], h_away[team2no][1], h_away[team2no][2], h_away[team2no][3], h_away[team2no][4], h_away[team2no][5], h_away[team2no][6], h_away[team2no][7]
+            scores[team2no]['score'], scores[team2no]['wingoal'], scores[team2no]['goal'], scores[team2no]['lossgoal'], scores[team2no]['wincnt'], scores[team2no]['deucecnt'], scores[team2no]['losscnt'], scores[team2no]['matchcnt'],
+            h_home[team2no]['score'], h_home[team2no]['wingoal'], h_home[team2no]['goal'], h_home[team2no]['lossgoal'], h_home[team2no]['wincnt'], h_home[team2no]['deucecnt'], h_home[team2no]['losscnt'], h_home[team2no]['matchcnt'],
+            h_away[team2no]['score'], h_away[team2no]['wingoal'], h_away[team2no]['goal'], h_away[team2no]['lossgoal'], h_away[team2no]['wincnt'], h_away[team2no]['deucecnt'], h_away[team2no]['losscnt'], h_away[team2no]['matchcnt']
           )
 
         end # matches_arr.each do |item|
@@ -168,43 +169,55 @@ module Huuuunt
     
     def calculate_rank_by_phase(season, match_set)
       match_set.each do |match_id|
-        rank = 1
+
         teams = Match.get_teams(match_id).to_i
         
         matches = Rank.calculate_rank_of_all_home_away(match_id, season)
+
+        #puts "#{match_id}, #{season}, #{matches['all'].size}, #{teams} ranks [all]  base data error!" if matches['all'].size % teams != 0
+        #puts "#{match_id}, #{season}, #{matches['all'].size}, #{teams} ranks [home] base data error!" if matches['home'].size % teams != 0
+        #puts "#{match_id}, #{season}, #{matches['all'].size}, #{teams} ranks [away] base data error!" if matches['away'].size % teams != 0
+
+        rank = 0
+        current_phase = 1
         matches['all'].each do |item|
+          if current_phase != item.phase
+            rank = 1
+            current_phase = item.phase
+          else
+            rank += 1
+          end
+
           item.rank = rank
           item.save
-
-          if rank == teams
-            rank = 1
-          else
-            rank += 1
-          end
         end
 
-        rank = 1
+        rankH = 0
+        current_phase = 1
         matches['home'].each do |item|
-          item.rankH = rank
-          item.save
-
-          if rank == teams
-            rank = 1
+          if current_phase != item.phase
+            rankH = 1
+            current_phase = item.phase
           else
-            rank += 1
+            rankH += 1
           end
+
+          item.rankH = rankH
+          item.save
         end
 
-        rank = 1
+        rankA = 0
+        current_phase = 1
         matches['away'].each do |item|
-          item.rankA = rank
-          item.save
-
-          if rank == teams
-            rank = 1
+          if current_phase != item.phase
+            rankA = 1
+            current_phase = item.phase
           else
-            rank += 1
+            rankA += 1
           end
+
+          item.rankA = rankA
+          item.save
         end
       end
       

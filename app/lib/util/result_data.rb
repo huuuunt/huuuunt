@@ -78,8 +78,8 @@ module Huuuunt
 
       begin
         # 代理服务器设置
-        result_data = Net::HTTP::Proxy('192.168.13.19', 7777).get(URI.parse(result_url))
-        #result_data = Net::HTTP.get(URI.parse(result_url))
+        #result_data = Net::HTTP::Proxy('192.168.13.19', 7777).get(URI.parse(result_url))
+        result_data = Net::HTTP.get(URI.parse(result_url))
       rescue Exception=>ex
         #$logger.error("#{path} download failed! #{ex}")
       end
@@ -176,7 +176,9 @@ module Huuuunt
 
           match_name = gbk2utf8(details[0])
 
-          next unless Match.match_need_import?(match_name)
+          unless Match.match_need_import?(match_name)
+            next
+          end
 
           team1_name = gbk2utf8(details[3])
           team2_name = gbk2utf8(details[5])
@@ -213,10 +215,10 @@ module Huuuunt
 
           matchinfono = create_matchinfono(match_date, match_id, team1_id, team2_id)
 
-          #puts "#{matchinfono},#{match_date},#{match_id},#{team1_id},#{team2_id},#{h_goal1},#{h_goal2},#{goal1},#{goal2},#{status}"
-
           # 判断该比赛结果是否已经存在数据库中，如果不存在，则保存到待插入的队列中
           unless Result.match_exist?(matchinfono)
+            puts "#{matchinfono},#{match_date},#{match_id},#{team1_id},#{team2_id},#{h_goal1},#{h_goal2},#{goal1},#{goal2},#{status}"
+
             results << Result.new( :matchinfono => matchinfono,
                                    :matchdt => match_dt,
                                    :matchno=> match_id,
@@ -230,8 +232,8 @@ module Huuuunt
                        )
           else
             #$logger.warn("#{matchinfono} exist!!! --- #{match_dt}, #{Match.match_id_map[match_id]['name']}, #{Team.team_id_map[team1_id]['team_name']}, #{Team.team_id_map[team2_id]['team_name']}")
-            puts "#{matchinfono} exist!!! --- #{match_dt}, #{Match.match_id_map[match_id]['name']}, #{Team.team_id_map[team1_id]['team_name']}, #{Team.team_id_map[team2_id]['team_name']}"
-            return
+            #puts "#{matchinfono} exist!!! --- #{match_dt}, #{Match.match_id_map[match_id]['name']}, #{Team.team_id_map[team1_id]['cn']}, #{Team.team_id_map[team2_id]['cn']}"
+            #return
           end
         end # until f.eof?
       end # File.open

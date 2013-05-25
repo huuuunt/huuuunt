@@ -17,7 +17,7 @@ class ScheduleGooooalCtrl
   include Huuuunt::ScheduleGooooalData
   include Huuuunt::Common
 
-  SCHEDULEPATH = File.expand_path("../../../extension/server/gooooal/", File.dirname(__FILE__))
+  SCHEDULEPATH = File.expand_path("../../data/schedule/gooooal/", File.dirname(__FILE__))
 
   # 默认下载赛程数据到最新日期为止
   # season: 赛季信息，如2010、2010-2011
