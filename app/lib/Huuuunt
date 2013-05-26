@@ -40,6 +40,7 @@ require 'cmd/schedule_cmd'
 require 'cmd/schedule_gooooal_cmd'
 require 'cmd/score_cmd'
 require 'cmd/rank_cmd'
+require 'cmd/tool_cmd'
 
 require 'util/huuuunt_log'
 
@@ -70,7 +71,8 @@ commands = {
   # Huuuunt score calc  2007 1 2 4
   # Huuuunt score calc  2007
   "ScoreCmd" => ["ScoreCalcCmd", "ScoreCheckCmd", "SoreAsiaCalcCmd", "ScoreAsiaCheckCmd"],
-  "RankCmd" => ["RankCalcBaseCmd", "RankCalcHistoryCmd"]
+  "RankCmd" => ["RankCalcBaseCmd", "RankCalcHistoryCmd", "RankChangeTeamNoCmd"],
+  "ToolCmd" => ["ToolChangeTeamNoCmd"]
 }
 
 commands.each do |m_cmd, s_cmds|

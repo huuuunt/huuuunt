@@ -118,5 +118,11 @@ class Score < ActiveRecord::Base
     where("matchno=#{match_id} and season=#{season}")
   end
 
+  def self.update_team_id(s_id, d_id)
+    where("teamno = #{s_id}").each do |r|
+      r.teamno = d_id
+      r.save
+    end
+  end
 
 end

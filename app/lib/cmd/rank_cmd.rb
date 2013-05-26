@@ -33,7 +33,21 @@ class RankCalcHistoryCmd < CmdParse::Command
   end
 
   def execute(args)
-    RankCtrl.calc_history(args)
+    puts 'new'
+    #RankCtrl.calc_history(args)
+  end
+end
+
+class RankChangeTeamNoCmd < CmdParse::Command
+  def initialize
+    super('changeteamno', false)
+    self.short_desc = "计算球队排名"
+    self.description = "计算球队排名"
+  end
+
+  def execute(args)
+    puts 'new'
+    #RankCtrl.calc_history(args)
   end
 end
 

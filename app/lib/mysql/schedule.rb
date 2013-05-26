@@ -46,5 +46,25 @@ class Schedule < ActiveRecord::Base
   def self.get_schedules_by_season_match(season, match_id)
     where("season=#{season} and matchno=#{match_id} and goal1 is not null and goal2 is not null")
   end
+
+  # 替换team_id
+  def self.update_team_id(s_id, d_id)
+    update_home_team_id(s_id, d_id)
+    update_away_team_id(s_id, d_id)
+  end
+
+  def self.update_home_team_id(s_id, d_id)
+    where("team1no = #{s_id}").each do |r|
+      r.team1no = d_id
+      r.save
+    end
+  end
+
+  def self.update_away_team_id(s_id, d_id)
+    where("team2no = #{s_id}").each do |r|
+      r.team2no = d_id
+      r.save
+    end
+  end
   
 end

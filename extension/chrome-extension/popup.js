@@ -149,44 +149,44 @@ function getRecentFinishedSchedule(season, type) {
     });
 }
 
+// 该程序存在问题，暂不使用。（检查数据文件是否存在的ajax，不能在每次循环时正常执行）
 // 检查近期赛事赛程是否获取完整，如果不完整，则补充完整。
 function checkRecentFinishedSchedule(season, type) {
-    $.get("http://localhost:8080/get_recent_finished_schedule.php", {spec_season: season, season_type: type}, function(data){
-        // data数据案例:
-        // {"match":
-        //    [
-        //      {"match_id":"1","gooooal_match_id":"4","phases":[2,4,38]},
-        //      {"match_id":"2","gooooal_match_id":"21","phases":[2,4,38]},
-        //      {"match_id":"4","gooooal_match_id":"22","phases":[2,4,38]},
-        //      {"match_id":"9","gooooal_match_id":"1","phases":[2,4,38]},
-        //      {"match_id":"24","gooooal_match_id":"3","phases":[2,4,38]},
-        //      {"match_id":"34","gooooal_match_id":"12","phases":[2,4,38]},
-        //    ]
-        //  }
-        alert(data);
-        var json = eval('(' + data + ')');
-        //alert(json.match.length);
-        for (i=0; i<json.match.length; i++) {
-            for (j=0; j<json.match[i].phases.length; j++) {
-                match = json.match[i].gooooal_match_id;
-                season = 2012;
-                roundNum = json.match[i].phases[j];
-                //alert(match + " " + season + " " + roundNum);
-                $.get("http://localhost:8080/check_update_schedule.php", {match: match, phase: roundNum, season: season}, function(data){
-                    alert(data);
-                    if (data == "true") {
-                        continue;
-                    }
-                    chrome.tabs.create(
-                        {
-                            'url': 'http://app.gooooal.com/resultschedule.do?lid=' + match + '&sid=' + season + '&roundNum=' + roundNum + '&lang=tr'
-                        }
-                    );
-                });
+  $.get("http://localhost:8080/get_recent_finished_schedule.php", {spec_season: season, season_type: type}, function(data){
+      // data数据案例:
+      // {"match":
+      //    [
+      //      {"match_id":"1","gooooal_match_id":"4","phases":[2,4,38]},
+      //      {"match_id":"2","gooooal_match_id":"21","phases":[2,4,38]},
+      //      {"match_id":"4","gooooal_match_id":"22","phases":[2,4,38]},
+      //      {"match_id":"9","gooooal_match_id":"1","phases":[2,4,38]},
+      //      {"match_id":"24","gooooal_match_id":"3","phases":[2,4,38]},
+      //      {"match_id":"34","gooooal_match_id":"12","phases":[2,4,38]},
+      //    ]
+      //  }
+      alert(data);
+      var json = eval('(' + data + ')');
+      //alert(json.match.length);
+      for (i=0; i<json.match.length; i++) {
+          for (j=0; j<json.match[i].phases.length; j++) {
+              match = json.match[i].gooooal_match_id;
+              season = 2012;
+              roundNum = json.match[i].phases[j];
+              //alert(match + " " + season + " " + roundNum);
+              $.get("http://localhost:8080/check_update_schedule.php", {match: match, phase: roundNum, season: season}, function(data){
+                  alert(data + " : " + match + " " + season + " " + roundNum);
+                  if (data == "false") {
+                      chrome.tabs.create(
+                          {
+                              'url': 'http://app.gooooal.com/resultschedule.do?lid=' + match + '&sid=' + season + '&roundNum=' + roundNum + '&lang=tr'
+                          }
+                      );
+                  }
+              });
 
-            } // for j
-        } // for i
-    });
+          } // for j
+      } // for i
+  });
 }
 
 
@@ -201,6 +201,7 @@ $(document).ready(function() {
     });
 
     $('#check_update_schedule_1').click(function() {
+        alert("enter");
         checkRecentFinishedSchedule(2012, 1);
     });
 
